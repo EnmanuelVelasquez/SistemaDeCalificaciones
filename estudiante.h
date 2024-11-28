@@ -14,12 +14,14 @@ typedef struct {
     char nombre[50];      // Nombre del estudiante
     char apellido[50];    // Apellido del estudiante
     Asignatura asignaturas[MAXASIGNATURAS]; // Vector de asignaturas
-    float calificaciones[MAXCALIFICACIONES];
 } Estudiante;
 
 // Definición de las funciones
 int buscarEstudiantePorId(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
 Estudiante crearEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes);
+Estudiante crearAsignaturasEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
+void menuActualizarCalificaciones();
+Estudiante actualizarCalificacionesEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
 void mostrarEstudiante(Estudiante estudiante);
 void menuActualizarEstudiante();
 Estudiante actualizarEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
@@ -29,6 +31,7 @@ void eliminarEstudiante(Estudiante *estudiantes, int *tamanoVectorEstudiantes, i
 void menuPrincipalEstudiante();
 void menuInteraccionDocente();
 
+//Buscar estudiante por id
 int buscarEstudiantePorId(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante) {
     for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
         if (estudiantes[contador].id == idEstudiante) {
@@ -54,52 +57,124 @@ Estudiante crearEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes)
     scanf("%49s", estudiante.nombre);
     printf("Ingrese apellido del estudiante sin espacios: ");
     scanf("%49s", estudiante.apellido);
-    for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
-        estudiante.calificaciones[contador] = 0;    
-        }
     printf("\nEstudiante creado exitosamente.\n");
     return estudiante;
 }
 
-Estudiante crearAsignaturasEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
-    Estudiante estudiante;
-    int indice = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
-    if (indice == -1) {
-        printf("Estudiante no encontrado.\n");
-        return estudiantes[indice];
-    }
-    estudiante = estudiantes[indice];
-    return estudiante;
+Estudiante asignarAsignaturasEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorAsignaturas;
 
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+
+    int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+    int numeroAsignaturas;
+        if (indiceEstudiante == -1){
+            printf("Estudiante no encontrado.\n");
+            return estudiantes[0]; //Lo retorna vacío
+        }
+        printf("\nIngrese cuantas asignaturas desea asignar: ");
+        scanf("%d", &numeroAsignaturas);
+        for (int contador = 0; contador < numeroAsignaturas; contador++) {
+            int idAsigntura;
+            for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+                printf("\nAsignatura %d:\n", contador + 1);
+                mostrarAsignatura(asignaturas[contador]);
+            }
+            printf("Ingrese el id de la asignatura a asignar: ");
+            scanf("%d", &idAsigntura);
+            int indiceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsigntura);
+            estudiantes[indiceEstudiante].asignaturas[contador] = asignaturas[indiceAsignatura];
+        }
+    return estudiantes[indiceEstudiante];
 }
 
-// case 3:
-//             printf("\nIngrese la posición de la calificacion a modificar: ");
-//             scanf("%d", &posicionCalificacion);
-//             if (posicionCalificacion >= 0 && posicionCalificacion < MAXCALIFICACIONES) {
-//                 printf("Ingrese la nueva calificación: ");
-//                 scanf("%f", &asignaturas[posicionModificarAsignatura].calificaciones[posicionCalificacion]);
-//                 printf("Calificación actualizada correctamente.\n");
-//             } else {
-//                 printf("Posición de calificación no válida.\n");
-//             }
-//             break;
-
 // Mostrar los datos de un estudiante
-void mostrarEstudiante(Estudiante estudiante) {
+void mostrarEstudiante(Estudiante estudiante){
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorAsignaturas;
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+
     printf("\nID: %d\n", estudiante.id);
     printf("Nombre: %s\n", estudiante.nombre);
     printf("Apellido: %s\n", estudiante.apellido);
+
+    printf("Asignaturas:\n");
+    for (int contador = 0; contador < tamanoVectorAsignaturas; contador++) {
+        printf("Asignatura %d: %s\n", contador + 1, estudiante.asignaturas[contador].nombre);
+    }
 }
 
-// Menú para actualizar datos de un estudiante
+//Muestra menu para actualizar calificaciones de un estudiante
+void menuActualizarCalificaciones(){
+    printf("\nMenu para actualizar calificaciones de un estudiante\n");
+    printf("1. Cambiar calificaciones\n");
+    printf("0. Salir\n");
+    printf("Seleccione una opcion: ");
+}
+
+//Menu para actualizar calificaciones de un estudiante
+Estudiante actualizarCalificacionesEstudiante(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorAsignaturas;
+    int opcion = 1;
+    int posicionCalificacion;
+    float valorcapturado;
+
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+
+    int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+    int idAsigntura;
+
+    if (indiceEstudiante == -1){
+        printf("Estudiante no encontrado.\n");
+        return estudiantes[0]; //Lo retorna vacío
+    }
+    
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+        printf("\nAsignatura %d:\n", contador + 1);
+        mostrarAsignatura(asignaturas[contador]);
+    }
+    printf("\nIngrese el id de la asignatura: ");
+    scanf("%d", &idAsigntura);
+    int indiceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsigntura);
+
+    while (opcion != 0){
+    menuActualizarCalificaciones();
+    scanf("%d", &opcion);
+        if (opcion == 1){
+            printf("\nCalificaciones: ");
+            for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
+                printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[indiceAsignatura].calificaciones[contador]);
+            }
+            printf("\n");
+            printf("\nIngrese la posicion de la calificacion: ");
+            scanf("%d", &posicionCalificacion);
+            if (posicionCalificacion >= MAXCALIFICACIONES){
+                printf("\nPosicion invalida.\n");
+                continue;
+            }
+
+            printf("\nIngrese el valor de la calificacion: ");
+            scanf("%f", &valorcapturado);
+
+            estudiantes[indiceEstudiante].asignaturas[indiceAsignatura].calificaciones[posicionCalificacion] = valorcapturado;
+            printf("\nCalificaciones: ");
+            for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
+                printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[indiceAsignatura].calificaciones[contador]);
+            }
+            printf("\nCalificacion actualizada exitosamente.\n");
+        }
+    }
+    return estudiantes[indiceEstudiante];
+}
+
+// Muestra menu para actualizar datos de un estudiante
 void menuActualizarEstudiante(){
     printf("\nMenu para actualizar datos de un estudiante\n");
     printf("1. Cambiar ID\n");
     printf("2. Cambiar nombre\n");
     printf("3. Cambiar apellido\n");
-    printf("4. Modificar asignaturas\n");
-    printf("5. Modificar calificaciones\n");
     printf("0. Salir\n");
     printf("Seleccione una opcion: ");
 }
@@ -221,7 +296,7 @@ void menuPrincipalEstudiante() {
         printf("2. Mostrar estudiantes\n");
         printf("3. Modificar estudiante\n");
         printf("4. Eliminar estudiante\n");
-        printf("5. Crear asignaturas\n");
+        printf("5. Asignar asignaturas\n");
         printf("6. Modificar calificaciones\n");
         printf("0. Salir\n");
         printf("Seleccione una opcion: ");
@@ -241,7 +316,7 @@ void menuPrincipalEstudiante() {
                     printf("No hay estudiantes registrados.\n");
                 } else {
                     for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
-                        printf("\nEstudiante %d:\n", contador);
+                        printf("\nEstudiante %d:\n", contador + 1);
                         mostrarEstudiante(estudiantes[contador]);
                     }
                 }
@@ -261,10 +336,25 @@ void menuPrincipalEstudiante() {
                 guardarEstudiantes(estudiantes, tamanoVectorEstudiantes);
                 break;
             case 5:
-                printf("\nIngrese el ID del estudiante a crear asignaturas: ");
+                for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
+                        printf("\nEstudiante %d:\n", contador + 1);
+                        mostrarEstudiante(estudiantes[contador]);
+                    }
+                printf("\nIngrese el ID del estudiante para asignar asignaturas: ");
                 int idEstudiante;
                 scanf("%d", &idEstudiante);
-                crearAsignaturasEstudiante(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+                asignarAsignaturasEstudiante(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+                guardarEstudiantes(estudiantes, tamanoVectorEstudiantes);
+                break;
+            case 6:
+                for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
+                        printf("\nEstudiante %d:\n", contador + 1);
+                        mostrarEstudiante(estudiantes[contador]);
+                    }
+                printf("\nIngrese el ID del estudiante a actualizar calificaciones: ");
+                int idEstudianteCalificaciones;
+                scanf("%d", &idEstudianteCalificaciones);
+                actualizarCalificacionesEstudiante(estudiantes, tamanoVectorEstudiantes, idEstudianteCalificaciones);
                 guardarEstudiantes(estudiantes, tamanoVectorEstudiantes);
                 break;
             case 0:
@@ -275,6 +365,62 @@ void menuPrincipalEstudiante() {
                 break;
         }
     }
+}
+
+void mostrarCalificacionesEstudiante(){
+    Estudiante estudiantes[MAXESTUDIANTES];
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorEstudiantes;
+    int tamanoVectorAsignaturas;
+    int indiceAsignatura;
+    int indiceEstudiante;
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+    leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
+
+    for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
+        printf("\nEstudiante %d:\n", contador + 1);
+        mostrarEstudiante(estudiantes[contador]);
+    }
+    printf("\nIngrese el ID del estudiante a mostrar calificaciones: ");
+    scanf("%d", &indiceEstudiante);
+    mostrarEstudiante(estudiantes[indiceEstudiante]);
+    printf("\nCalificaciones: ");
+    for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
+        printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[indiceAsignatura].calificaciones[contador]);
+    }
+    printf("\n");
+}
+
+void menuInteraccionEstudiante(){
+    Estudiante estudiantes[MAXESTUDIANTES];
+    int tamanoVectorEstudiantes;
+    leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
+
+    int opcion = 1;
+
+    while(opcion != 0){
+        printf("\n--- Menu de Estudiante ---\n");
+        printf("\n1. Mostrar calificaciones\n");
+        printf("2. Generar boletin\n");
+        printf("0. Salir\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+        switch (opcion) {
+            case 1:
+                mostrarCalificacionesEstudiante();
+                break;
+            case 2:
+                menuActualizarCalificaciones();
+                break;
+            case 0:
+                salir();
+                break;
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                break;
+        }
+    }
+
 }
 
 #endif // ESTUDIANTE_H

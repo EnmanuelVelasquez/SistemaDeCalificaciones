@@ -197,7 +197,7 @@ void menuPrincipalAdmin() {
                     printf("No hay administradores registrados.\n");
                 } else {
                     for (int contador = 0; contador < tamanoVectorAdmins; contador++){
-                        printf("\nAdmin %d:\n", contador);
+                        printf("\nAdmin %d:\n", contador + 1);
                         mostrarAdmin(admins[contador]);
                     }
                 }
@@ -233,8 +233,6 @@ void menuGestionCruds(){
         printf("2. Gestionar docente\n");
         printf("3. Gestionar estudiante\n");
         printf("4. Gestionar asignatura\n");
-        printf("5. Gestionar calificacion\n");
-        printf("6. Volver al menu principal\n");
         printf("0. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);

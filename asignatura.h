@@ -10,6 +10,7 @@
 typedef struct {
     int id;
     char nombre[50];
+    float calificaciones[MAXCALIFICACIONES];
 } Asignatura;
 
 // Definición de las funciones de Asignatura:
@@ -50,7 +51,6 @@ Asignatura crearAsignatura(Asignatura *asignaturas, int tamanoVectorAsiganutas){
 void mostrarAsignatura(Asignatura asignatura){
     printf("Id: %d\n", asignatura.id);
     printf("Nombre: %s\n", asignatura.nombre);
-    printf("\n");
 }
 
 void menuActualizarAsignatura(){
@@ -184,7 +184,7 @@ void menuPrincipalAsignatura(){
                     break;
                 }else{
                     for (int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-                    printf("\nAsignatura %d:\n", contador);
+                    printf("\nAsignatura %d:\n", contador + 1);
                     mostrarAsignatura(asignaturas[contador]);
                     }
                 }

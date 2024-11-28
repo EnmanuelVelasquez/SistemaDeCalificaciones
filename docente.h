@@ -12,7 +12,6 @@
 typedef struct {
     int id;             // ID del docente
     char nombre[50];    // Nombre del docente
-    char contrasena[50]; // Contraseña del docente
     Asignatura asignaturas[MAXASIGNATURAS]; // Asignatura que enseña el docente
 } Docente;
 
@@ -49,8 +48,6 @@ Docente crearDocente(Docente *docentes, int tamanoVectorDocentes) {
     }
     printf("Ingrese el nombre del docente sin espacios: ");
     scanf("%49s", docente.nombre);
-    printf("Ingrese contrasena del docente: ");
-    scanf("%49s", docente.contrasena);
     printf("\nDocente creado exitosamente.\n");
     return docente;
 }
@@ -58,14 +55,12 @@ Docente crearDocente(Docente *docentes, int tamanoVectorDocentes) {
 void mostrarDocente(Docente docente) {
     printf("\nID: %d\n", docente.id);
     printf("Nombre: %s\n", docente.nombre);
-    printf("Contrasena: %s\n", docente.contrasena);
 }
 
 void menuActualizarDocente(){
     printf("\nMenu para actualizar datos de un docente\n");
     printf("\n1. Cambiar ID\n");
     printf("2. Cambiar nombre\n");
-    printf("3. Cambiar contrasena\n");
     printf("0. Regresar al menu anterior\n");
     printf("\nSeleccione una opcion: ");
 }
@@ -91,10 +86,6 @@ Docente actualizarDocente(Docente *docentes, int tamanoVectorDocentes, int idDoc
                 scanf("%49s", docentes[indice].nombre);
                 printf("\nNombre actualizado exitosamente.\n");
                 break;
-            case 3:
-                printf("\nIngrese la nueva contrasena del docente: ");
-                scanf("%49s", docentes[indice].contrasena);
-                printf("\nContrasena actualizada exitosamente.\n");
                 break;
             case 0:
                 printf("\nSaliendo del menu de actualizacion.\n");
@@ -228,7 +219,8 @@ void menuInteraccionDocente(){
     while(opcion != 0){
         printf("\n--- Menu de Docente ---\n");
         printf("\n1. Gestionar estudiantes\n");
-        printf("0. Volver al menu principal\n");
+        printf("2. Gestionar asignaturas\n");
+        printf("0. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
         switch (opcion) {
@@ -236,6 +228,12 @@ void menuInteraccionDocente(){
                 menuPrincipalEstudiante();
                 break;
                 printf("Regresando al menu principal...\n");
+                break;
+            case 2:
+                menuPrincipalAsignatura();
+                break;
+            case 0:
+                salir();
                 break;
             default:
                 printf("Opcion no valida. Intente nuevamente.\n");
