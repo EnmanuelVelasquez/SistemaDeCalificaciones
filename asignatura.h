@@ -13,6 +13,7 @@ typedef struct {
 } Asignatura;
 
 // Definición de las funciones de Asignatura:
+int buscarAsignaturaPorId(Asignatura *asignaturas, int tamanoVectorAsignaturas, int idAsignatura);
 Asignatura crearAsignatura();
 void mostrarAsignatura();
 void menuActualizarAsignatura();
@@ -22,11 +23,25 @@ void leerArchvivosAsignaturas(Asignatura *Asignaturas, int *tamanoVectorAsignatu
 void eliminarAsignatura();
 
 // Inicialización de las funciones:
-Asignatura crearAsignatura(){
+int buscarAsignaturaPorId(Asignatura *asignaturas, int tamanoVectorAsignaturas, int idAsignatura){//Función recursiva
+    if (tamanoVectorAsignaturas == 0) {
+        return -1; // No encontrado
+    }
+    if (asignaturas[tamanoVectorAsignaturas - 1].id == idAsignatura) {
+        return tamanoVectorAsignaturas - 1; // Retorna el índice encontrado
+    }
+    return buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas - 1, idAsignatura);
+}
+
+Asignatura crearAsignatura(Asignatura *asignaturas, int tamanoVectorAsiganutas){
     Asignatura asignatura;
     printf("\nIngrese el ID de la asignatura: \n");
     scanf("%d", &asignatura.id);
-    printf("Ingrese el nombre de la asignatura: \n");
+    if(buscarAsignaturaPorId(asignaturas, tamanoVectorAsiganutas, asignatura.id) != -1){
+        printf("El ID ya está en uso. Intente nuevamente.\n");
+        return crearAsignatura(asignaturas, tamanoVectorAsiganutas);
+    }
+    printf("Ingrese el nombre de la asignatura sin espacios: \n");
     scanf("%s", asignatura.nombre);
     printf("\nAsignatura creada correctamente\n");
     return asignatura;
@@ -46,8 +61,12 @@ void menuActualizarAsignatura(){
     printf("Seleccione una opcion: ");
 }
 
-Asignatura actualizarAsignatura(Asignatura *asignaturas, int posicionModificarAsignatura){
-    //Se recibe una posición del vector Asignaturas para seleccionar qué se desea modificar:
+Asignatura actualizarAsignatura(Asignatura *asignaturas, int tamanoVectorAsignaturas, int idAsignatura){
+    int indice = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsignatura);
+    if (indice == -1){
+        printf("No existe asignatura con ese id\n");
+        return asignaturas[indice];
+    }
     int opcion = 1;    
     while (opcion != 0){
         menuActualizarAsignatura();
@@ -55,49 +74,49 @@ Asignatura actualizarAsignatura(Asignatura *asignaturas, int posicionModificarAs
         switch (opcion){
         case 1:
             printf("Ingrese el nuevo id de la asignatura: ");
-            scanf("%d", &asignaturas[posicionModificarAsignatura].id);
+            scanf("%d", &asignaturas[indice].id);
             printf("\nId actualizado exitosamente!\n");
             break;
         case 2:
-            printf("Ingrese el nuevo nombre del asignatura: ");
-            scanf("%s", asignaturas[posicionModificarAsignatura].nombre);
+            printf("Ingrese el nuevo nombre del asignatura sin espacios: ");
+            scanf("%s", asignaturas[indice].nombre);
             printf("\nNombre actualizado exitosamente!\n");
             break;
         case 0:
             printf("\nHas salido del menu de crear asignatura\n");
             break;
         default:
-            printf("\nOpcion no válida!\n");
+            printf("\nOpcion no valida!\n");
             break;
         }
     }
     //Se retorna el Asignatura modificado
-    return asignaturas[posicionModificarAsignatura];
+    return asignaturas[indice];
 }
 
 void guardararchivoAsignaturas(Asignatura *asignaturas, int tamanoVectorAsignaturas){
-    FILE *archivoAsignaturas = fopen("data/asignaturas.bat", "wb"); //Modifica todo el archivoAsignatura en binario, cargando y actualizando todo el vector
-    if(archivoAsignaturas == NULL){
+    FILE *archivoAsignaturas = ABRIR_ARCHIVO("data/asignaturas.bat", "wb"); //Modifica todo el archivoAsignatura en binario, cargando y actualizando todo el vector
+    if(archivoAsignaturas == NULL){ 
         FILE_ERROR("Error al crear el archivo de asignaturas");// Retorna un código de error
     }
     fwrite(asignaturas, sizeof(Asignatura), tamanoVectorAsignaturas, archivoAsignaturas);
-    fclose(archivoAsignaturas);
+    CERRAR_ARCHIVO(archivoAsignaturas);
 }
 
 void leerArchvivosAsignaturas(Asignatura *Asignaturas, int *tamanoVectorAsignaturas){
     // Lee el archivo Asignaturas en binario
-    FILE *archivoAsignaturas = fopen("data/asignaturas.bat", "rb");
+    FILE *archivoAsignaturas = ABRIR_ARCHIVO("data/asignaturas.bat", "rb");
     //Evaluamos si no está creado 
     if (archivoAsignaturas == NULL){
          // En caso que no esté creado, lo creamos de tipo binario
-         archivoAsignaturas = fopen("data/asignaturas.bat", "wb"); 
+         archivoAsignaturas = ABRIR_ARCHIVO("data/asignaturas.bat", "wb");
          // Validamos nuevamente que esté creado
         if (archivoAsignaturas == NULL){
             FILE_ERROR("Error al crear el archivo de asignaturas"); //La macro finaliza el programa y muestra el mensaje
         }
         // Inicializa el tamaño del vector de Asignaturas en 0 para indicar que no hay nadie
     *tamanoVectorAsignaturas = 0; 
-    fclose(archivoAsignaturas); // Cierra el archivo creado
+    CERRAR_ARCHIVO(archivoAsignaturas); // Cierra el archivo creado
     return;
     }
     // Inicializa el contador
@@ -105,35 +124,26 @@ void leerArchvivosAsignaturas(Asignatura *Asignaturas, int *tamanoVectorAsignatu
     while (*tamanoVectorAsignaturas < MAXASIGNATURAS && fread(&Asignaturas[*tamanoVectorAsignaturas], sizeof(Asignatura), 1, archivoAsignaturas)) {
         (*tamanoVectorAsignaturas)++;
     }
+    CERRAR_ARCHIVO(archivoAsignaturas);
 }
 
-void eliminarAsignatura(Asignatura *Asignaturas, int *tamanoVectorAsignaturas, int idAsignatura){
-    //Suponemos que el Asignatura no existe, inializamos en -1:
-    int poscionAsignaturaEliminar = -1;
-    for(int contador = 0; contador < *tamanoVectorAsignaturas; contador++){
-        if (Asignaturas[contador].id == idAsignatura){ //Buscamos el id del Asignatura en el vector
-            poscionAsignaturaEliminar = contador; //Asignamos la posición a la variable que vamos a usar
-            break;
-        }
-    }
-    if(poscionAsignaturaEliminar != -1){
-        for (int contador = poscionAsignaturaEliminar; contador < *tamanoVectorAsignaturas - 1; contador++){
-            //Reescribimos todo el vector desde el punto de referencia del Asignatura a eliminar
-            Asignaturas[contador] = Asignaturas[contador + 1];
-            //Los Asignaturas modificados fueron movidos una posición a la izquierda
-        }
-        (*tamanoVectorAsignaturas)--; //Reajustamos el tamaño del vector
-        printf("Asignatura con ID %d eliminado exitosamente.\n", idAsignatura);
-    } else {
+void eliminarAsignatura(Asignatura *Asignaturas, int *tamanoVectorAsignaturas, int idAsignatura) {
+    int indice = buscarAsignaturaPorId(Asignaturas, *tamanoVectorAsignaturas, idAsignatura);
+    if (indice == -1) {
         printf("Asignatura con ID %d no encontrado.\n", idAsignatura);
+        return;
     }
+    for (int contador = indice; contador < *tamanoVectorAsignaturas - 1; contador++) {
+        Asignaturas[contador] = Asignaturas[contador + 1];
+    }
+    (*tamanoVectorAsignaturas)--;
+    printf("Asignatura con ID %d eliminado exitosamente.\n", idAsignatura);
 }
 
 void menuPrincipalAsignatura(){
     Asignatura asignaturas[MAXASIGNATURAS];
-    int tamanoVectorAsignaturas = 0;
+    int tamanoVectorAsignaturas;
     int opcion = 1;
-    int validarId;
 
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas); //Si hay datos en el vector, los leemos
 
@@ -150,16 +160,15 @@ void menuPrincipalAsignatura(){
             case 1:
                 // Validamos que halla espacio para crear más Asignaturas
                 if (tamanoVectorAsignaturas < MAXASIGNATURAS) {
-                    Asignatura asignatura = crearAsignatura();
-                    asignaturas[tamanoVectorAsignaturas] = asignatura;
+                    asignaturas[tamanoVectorAsignaturas] = crearAsignatura(asignaturas, tamanoVectorAsignaturas);
                     tamanoVectorAsignaturas++;
                     guardararchivoAsignaturas(asignaturas, tamanoVectorAsignaturas); //Guardamos el Asignatura después de crearlo
                 } else {
-                    printf("\nEl máximo número de asignaturas ha sido alcanzado.\n");
+                    printf("\nEl maximo numero de asignaturas ha sido alcanzado.\n");
                 }
                 break;
             case 2:
-                //Se imprimen todos los Asignaturas guardados
+                //Se imprimen todos las asignaturas guardadas
                 if(tamanoVectorAsignaturas == 0){
                     printf("\nNo hay Asignaturas para mostar!\n");
                     break;
@@ -171,45 +180,18 @@ void menuPrincipalAsignatura(){
                 }
                 break;
             case 3:
-                if(tamanoVectorAsignaturas == 0){
-                    printf("\nNo hay Asignaturas para modificar!\n");
-                    break;
-                }else{
-                    //Validamos la existencia del Asignatura en el vector
-                    printf("\nIngrese el ID del Asignatura a modificar: ");
-                    scanf("%d", &validarId);
-                    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-                        if(validarId != asignaturas[contador].id){
-                            printf("\nEl ID ingresado no corresponde a ningun Asignatura!\n");
-                            break;
-                        }else if(validarId == asignaturas[contador].id){
-                            printf("\nAsignatura encontrada!\n");
-                            asignaturas[contador] = actualizarAsignatura(asignaturas, contador);
-                            guardararchivoAsignaturas(asignaturas, tamanoVectorAsignaturas);
-                        }
-                    }
-                }
+                printf("Ingrese el ID de la asignatura a modificar: ");
+                int idModificar;
+                scanf("%d", &idModificar);
+                actualizarAsignatura(asignaturas, tamanoVectorAsignaturas, idModificar);
+                guardararchivoAsignaturas(asignaturas, tamanoVectorAsignaturas);
                 break;
             case 4:
-                if(tamanoVectorAsignaturas == 0){
-                        printf("\nNo hay Asignaturas para eliminar!\n");
-                        break;
-                    }else{
-                        //Validamos la existencia del Asignatura en el vector
-                        printf("\nIngrese el ID del Asignatura a eliminar: ");
-                        scanf("%d", &validarId);
-                        for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-                            if(validarId != asignaturas[contador].id){
-                                printf("\nEl ID ingresado no corresponde a ningun Asignatura!\n");
-                                break;
-                            }else if(validarId == asignaturas[contador].id){
-                                printf("\nAsignatura encontrado!\n");
-                                eliminarAsignatura(asignaturas, &tamanoVectorAsignaturas, validarId);
-                                guardararchivoAsignaturas(asignaturas, tamanoVectorAsignaturas); //Guardamos el Asignatura después de crearlo
-                                break;
-                            }
-                        }
-                    }
+                printf("Ingrese el ID de la asignatura a eliminar: ");
+                int idEliminar;
+                scanf("%d", &idEliminar);
+                eliminarAsignatura(asignaturas, &tamanoVectorAsignaturas, idEliminar);
+                guardararchivoAsignaturas(asignaturas, tamanoVectorAsignaturas);
                 break;
             case 0:
                 printf("\nHas salido del menu de asignatura\n");

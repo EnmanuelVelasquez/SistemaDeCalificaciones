@@ -41,13 +41,13 @@ int buscarDocentePorId(Docente *docentes, int tamanoVectorDocentes, int idDocent
 
 Docente crearDocente(Docente *docentes, int tamanoVectorDocentes) {
     Docente docente;
-    printf("Ingrese ID del docente: ");
+    printf("\nIngrese ID del docente: ");
     scanf("%d", &docente.id);
     if(buscarDocentePorId(docentes, tamanoVectorDocentes, docente.id) != -1) {
         printf("El ID ya está en uso. Intente nuevamente.\n");
         return crearDocente(docentes, tamanoVectorDocentes);
     }
-    printf("Ingrese nombre del docente: ");
+    printf("Ingrese el nombre del docente sin espacios: ");
     scanf("%49s", docente.nombre);
     printf("Ingrese contrasena del docente: ");
     scanf("%49s", docente.contrasena);
@@ -63,17 +63,17 @@ void mostrarDocente(Docente docente) {
 
 void menuActualizarDocente(){
     printf("\nMenu para actualizar datos de un docente\n");
-    printf("1. Cambiar ID\n");
+    printf("\n1. Cambiar ID\n");
     printf("2. Cambiar nombre\n");
     printf("3. Cambiar contrasena\n");
-    printf("0. Salir\n");
-    printf("Seleccione una opcion: ");
+    printf("0. Regresar al menu anterior\n");
+    printf("\nSeleccione una opcion: ");
 }
 
 Docente actualizarDocente(Docente *docentes, int tamanoVectorDocentes, int idDocente) {
     int indice = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocente);
     if (indice == -1) {
-        printf("Docente no encontrado.\n");
+        printf("\nDocente no encontrado.\n");
         return docentes[indice];
     }
     int opcion = 1;
@@ -82,22 +82,26 @@ Docente actualizarDocente(Docente *docentes, int tamanoVectorDocentes, int idDoc
         scanf("%d", &opcion);
         switch (opcion) {
             case 1:
-                printf("Ingrese el nuevo ID del docente: ");
+                printf("\nIngrese el nuevo ID del docente: ");
                 scanf("%d", &docentes[indice].id);
+                printf("\nID actualizada exitosamente.\n");
                 break;
             case 2:
-                printf("Ingrese el nuevo nombre del docente: ");
+                printf("\nIngrese el nuevo nombre del docente sin espacios: ");
                 scanf("%49s", docentes[indice].nombre);
+                printf("\nNombre actualizado exitosamente.\n");
                 break;
             case 3:
-                printf("Ingrese la nueva contraseña del docente: ");
+                printf("\nIngrese la nueva contrasena del docente: ");
                 scanf("%49s", docentes[indice].contrasena);
+                printf("\nContrasena actualizada exitosamente.\n");
                 break;
             case 0:
-                printf("Saliendo del menu de actualización.\n");
+                printf("\nSaliendo del menu de actualizacion.\n");
+                Sleep(1000);
                 break;
             default:
-                printf("Opción no válida.\n");
+                printf("\nOpcion no valida.\n");
                 break;
         }
     }
@@ -132,32 +136,44 @@ void leerArchivosDocente(Docente *docentes, int *tamanoVectorDocentes) {
 
 void eliminarDocente(Docente *docentes, int *tamanoVectorDocentes, int idDocente) {
     int indice = buscarDocentePorId(docentes, *tamanoVectorDocentes, idDocente);
+    int confirmacion;
     if (indice == -1) {
-        printf("Docente con ID %d no encontrado.\n", idDocente);
+        printf("\nDocente con ID %d no encontrado.\n", idDocente);
         return;
     }
-    for (int contador = indice; contador < *tamanoVectorDocentes - 1; contador++) {
+    printf("\nEsta seguro de que desea eliminar al docente con ID %d?\n", idDocente);
+    printf("\n1. Si");
+    printf("\n0. No\n");
+    printf("\nSeleccione una opcion: ");
+    scanf("%d", &confirmacion);
+
+    if (confirmacion != 1) {
+        printf("\nEliminacion cancelada.\n");
+        return;
+    }
+    // Eliminar al docente desplazando el resto del vector
+    for (int contador = indice; contador < *tamanoVectorDocentes - 1; contador++){
         docentes[contador] = docentes[contador + 1];
     }
     (*tamanoVectorDocentes)--;
-    printf("Docente con ID %d eliminado exitosamente.\n", idDocente);
+    printf("\nDocente con ID %d eliminado exitosamente.\n", idDocente);
 }
 
-void menuPrincipalDocente() {
+void menuPrincipalDocente(){
     Docente docentes[MAXDOCENTES];
-    int tamanoVectorDocentes;
-    int opcion = 1;
-
+    int tamanoVectorDocentes = 0;
+    int opcion;
+    
     leerArchivosDocente(docentes, &tamanoVectorDocentes);
     
-    while (opcion != 0) {
+    while (opcion != 0){
         printf("\nMenu principal docentes\n");
-        printf("1. Crear docente\n");
+        printf("\n1. Crear docente\n");
         printf("2. Mostrar docentes\n");
         printf("3. Modificar docente\n");
         printf("4. Eliminar docente\n");
-        printf("0. Salir\n");
-        printf("Seleccione una opcion: ");
+        printf("0. Regresar al menu anterior\n");
+        printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
         switch (opcion) {
             case 1:
@@ -166,38 +182,39 @@ void menuPrincipalDocente() {
                     tamanoVectorDocentes++;
                     guardarDocentes(docentes, tamanoVectorDocentes);
                 } else {
-                    printf("No se pueden agregar más docentes.\n");
+                    printf("\nNo se pueden agregar mas docentes.\n");
                 }
                 break;
             case 2:
                 if (tamanoVectorDocentes == 0) {
-                    printf("No hay docentes registrados.\n");
+                    printf("\nNo hay docentes registrados.\n");
                 } else {
                     for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
-                        printf("\nDocente %d:\n", contador);
+                        printf("\nDocente %d:\n", contador+1);
                         mostrarDocente(docentes[contador]);
                     }
                 }
                 break;
             case 3:
-                printf("Ingrese el ID del docente a modificar: ");
+                printf("\nIngrese el ID del docente a modificar: ");
                 int idModificar;
                 scanf("%d", &idModificar);
                 actualizarDocente(docentes, tamanoVectorDocentes, idModificar);
                 guardarDocentes(docentes, tamanoVectorDocentes);
                 break;
             case 4:
-                printf("Ingrese el ID del docente a eliminar: ");
+                printf("\nIngrese el ID del docente a eliminar: ");
                 int idEliminar;
                 scanf("%d", &idEliminar);
                 eliminarDocente(docentes, &tamanoVectorDocentes, idEliminar);
                 guardarDocentes(docentes, tamanoVectorDocentes);
                 break;
             case 0:
-                printf("Saliendo del menú de docentes.\n");
+                printf("\nSaliendo del menu de docentes.\n");
+                Sleep(1000);
                 break;
             default:
-                printf("Opción no válida.\n");
+                printf("\nOpcion no valida.\n");
         }
     }
 }
@@ -210,20 +227,19 @@ void menuInteraccionDocente(){
     leerArchivosDocente(docentes, &tamanoVectorDocentes);
     
     while(opcion != 0){
-        printf("\n--- Menú de Docente ---\n");
-        printf("1. Gestionar estudiantes\n");
-        printf("0. Volver al menú principal\n");
-        printf("Opción: ");
+        printf("\n--- Menu de Docente ---\n");
+        printf("\n1. Gestionar estudiantes\n");
+        printf("0. Volver al menu principal\n");
+        printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
-
         switch (opcion) {
             case 1:
                 menuPrincipalEstudiante();
                 break;
-                printf("Regresando al menú principal...\n");
+                printf("Regresando al menu principal...\n");
                 break;
             default:
-                printf("Opción no válida. Intente nuevamente.\n");
+                printf("Opcion no valida. Intente nuevamente.\n");
                 break;
         }
     } 

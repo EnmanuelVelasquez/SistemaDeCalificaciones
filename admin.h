@@ -100,7 +100,7 @@ Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmins, int idAdmin){
                 printf("Saliendo del menu de actualización.\n");
                 break;
             default:
-                printf("Opción no válida.\n");
+                printf("Opcion no valida.\n");
                 break;
         }
     }
@@ -179,7 +179,7 @@ void menuPrincipalAdmin() {
                     tamanoVectorAdmins++;
                     guardararchivoAdmin(admins, tamanoVectorAdmins);
                 } else {
-                    printf("No se pueden agregar más administradores.\n");
+                    printf("No se pueden agregar mas administradores.\n");
                 }
                 break;
             case 2:
@@ -207,10 +207,10 @@ void menuPrincipalAdmin() {
                 guardararchivoAdmin(admins, tamanoVectorAdmins);
                 break;
             case 0:
-                printf("Saliendo del menú de administradores.\n");
+                printf("Saliendo del menu de administradores.\n");
                 break;
             default:
-                printf("Opción no válida.\n");
+                printf("Opcion no valida.\n");
         }
     }
 }
@@ -218,15 +218,15 @@ void menuPrincipalAdmin() {
 void menuGestionCruds(){
     int opcion = 1;
     while(opcion != 0){
-        printf("\nMenú Administrador\n");
-        printf("1. Gestionar administrador\n");
+        printf("\nMenu Administrador\n");
+        printf("\n1. Gestionar administrador\n");
         printf("2. Gestionar docente\n");
         printf("3. Gestionar estudiante\n");
         printf("4. Gestionar asignatura\n");
-        printf("5. Gestionar calificación\n");
-        printf("6. Volver al menú principal\n");
+        printf("5. Gestionar calificacion\n");
+        printf("6. Volver al menu principal\n");
         printf("0. Salir\n");
-        printf("Seleccione una opcion: ");
+        printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
         switch(opcion){
             case 1:
@@ -245,7 +245,7 @@ void menuGestionCruds(){
                 salir();
                 break;
             default:
-                printf("opcion no válida\n");
+                printf("opcion no valida\n");
         }    
     }
 }

@@ -23,12 +23,12 @@ Menu menuPrincipal() {
     Menu opcion;
 
     printf("\n-----Bienvenido a CalifiC-----\n");
-    printf("Tipo de usuario: \n");
+    printf("\nTipo de usuario: \n");
     printf("1. Administrador\n");
     printf("2. Docente\n");
     printf("3. Estudiante\n");
     printf("0. Salir\n");
-    printf("Selecciona una opción: ");
+    printf("\nSelecciona una opcion: ");
     scanf("%d", (int*)&opcion); // Lee la opción y la convierte a tipo Menu
 
     switch (opcion) {
@@ -43,9 +43,10 @@ Menu menuPrincipal() {
             break;
         case Salir:
             printf("Saliendo del menú principal.\n");
+            Sleep(2000);
             break;
         default:
-            printf("Opción no válida.\n");
+            printf("Opcion no valida.\n");
             menuPrincipal();
     }
 
