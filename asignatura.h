@@ -129,8 +129,18 @@ void leerArchvivosAsignaturas(Asignatura *Asignaturas, int *tamanoVectorAsignatu
 
 void eliminarAsignatura(Asignatura *Asignaturas, int *tamanoVectorAsignaturas, int idAsignatura) {
     int indice = buscarAsignaturaPorId(Asignaturas, *tamanoVectorAsignaturas, idAsignatura);
+    int confirmacion;
     if (indice == -1) {
         printf("Asignatura con ID %d no encontrado.\n", idAsignatura);
+        return;
+    }
+    printf("\nEsta seguro de que desea eliminar la asignatura con ID %d?\n", idAsignatura);
+    printf("\n1. Si");
+    printf("\n0. No");
+    printf("\nSeleccione una opcion: ");
+    scanf("%d", &confirmacion);
+    if (confirmacion != 1) {
+        printf("\nEliminacion cancelada.\n");
         return;
     }
     for (int contador = indice; contador < *tamanoVectorAsignaturas - 1; contador++) {

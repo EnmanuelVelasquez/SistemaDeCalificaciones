@@ -217,7 +217,7 @@ void menuPrincipalEstudiante() {
 
     while (opcion != 0) {
         printf("\nMenu principal estudiantes\n");
-        printf("1. Crear estudiante\n");
+        printf("\n1. Crear estudiante\n");
         printf("2. Mostrar estudiantes\n");
         printf("3. Modificar estudiante\n");
         printf("4. Eliminar estudiante\n");

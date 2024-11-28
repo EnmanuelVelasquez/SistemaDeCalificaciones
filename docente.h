@@ -146,7 +146,6 @@ void eliminarDocente(Docente *docentes, int *tamanoVectorDocentes, int idDocente
     printf("\n0. No\n");
     printf("\nSeleccione una opcion: ");
     scanf("%d", &confirmacion);
-
     if (confirmacion != 1) {
         printf("\nEliminacion cancelada.\n");
         return;

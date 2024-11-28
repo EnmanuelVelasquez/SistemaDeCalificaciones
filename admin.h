@@ -145,8 +145,18 @@ void leerArchivosAdmin(Admin *admins, int *tamanoVectorAdmins){
 
 void eliminarAdmin(Admin *admins, int *tamanoVectorAdmins, int idAdmin){
     int indice = buscarAdminPorId(admins, *tamanoVectorAdmins, idAdmin);
+    int confirmacion;
     if (indice == -1) {
         printf("Administrador con ID %d no encontrado.\n", idAdmin);
+        return;
+    }
+    printf("\nEsta seguro de que desea eliminar al adiministrador con ID %d?\n", idAdmin);
+    printf("\n1. Si");
+    printf("\n0. No");
+    printf("\nSeleccione una opcion: ");
+    scanf("%d", &confirmacion);
+    if (confirmacion != 1) {
+        printf("\nEliminacion cancelada.\n");
         return;
     }
     for (int contador = indice; contador < *tamanoVectorAdmins - 1; contador++) {
