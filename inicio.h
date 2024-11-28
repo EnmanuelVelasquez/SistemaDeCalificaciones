@@ -39,7 +39,7 @@ Menu menuPrincipal() {
             menuInteraccionDocente();
             break;
         case MenuPrincipalEstudiante:
-            //menuInteraccionEstudiante();
+            menuInteraccionEstudiante();
             break;
         case Salir:
             printf("Saliendo del menú principal.\n");

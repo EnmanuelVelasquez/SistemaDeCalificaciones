@@ -367,29 +367,37 @@ void menuPrincipalEstudiante() {
     }
 }
 
-void mostrarCalificacionesEstudiante(){
+void mostrarCalificacionesEstudiante(int idEstudiante){
     Estudiante estudiantes[MAXESTUDIANTES];
     Asignatura asignaturas[MAXASIGNATURAS];
     int tamanoVectorEstudiantes;
     int tamanoVectorAsignaturas;
-    int indiceAsignatura;
     int indiceEstudiante;
+
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
     leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
 
-    for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
-        printf("\nEstudiante %d:\n", contador + 1);
-        mostrarEstudiante(estudiantes[contador]);
+    indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+
+    printf("\nID: %d\n", estudiantes[indiceEstudiante].id);
+    printf("Nombre: %s\n", estudiantes[indiceEstudiante].nombre);
+    printf("Apellido: %s", estudiantes[indiceEstudiante].apellido);   
+
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++) {
+        if(estudiantes[indiceEstudiante].asignaturas[contador].id == asignaturas[contador].id) {
+            printf("\n\nAsignatura %d: \n", contador + 1);
+            printf("ID: %d\n", estudiantes[indiceEstudiante].asignaturas[contador].id);
+            printf("Nombre: %s\n", estudiantes[indiceEstudiante].asignaturas[contador].nombre);
+            printf("Calificaciones: \n");
+            
+            for(int contador2 = 0; contador2 < MAXCALIFICACIONES; contador2++) {
+                printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[contador].calificaciones[contador2]);
+            }
+            printf("\n"); // Añadir un salto de línea después de las calificaciones
+        }
     }
-    printf("\nIngrese el ID del estudiante a mostrar calificaciones: ");
-    scanf("%d", &indiceEstudiante);
-    mostrarEstudiante(estudiantes[indiceEstudiante]);
-    printf("\nCalificaciones: ");
-    for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
-        printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[indiceAsignatura].calificaciones[contador]);
-    }
-    printf("\n");
 }
+                
 
 void menuInteraccionEstudiante(){
     Estudiante estudiantes[MAXESTUDIANTES];
@@ -407,10 +415,17 @@ void menuInteraccionEstudiante(){
         scanf("%d", &opcion);
         switch (opcion) {
             case 1:
-                mostrarCalificacionesEstudiante();
+                for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
+                    printf("\nEstudiante %d:\n", contador + 1);
+                    mostrarEstudiante(estudiantes[contador]);
+                }
+                printf("\nIngrese el ID del estudiante a mostrar calificaciones: ");
+                int idEstudiante;
+                scanf("%d", &idEstudiante);
+                mostrarCalificacionesEstudiante(idEstudiante);
                 break;
             case 2:
-                menuActualizarCalificaciones();
+                //generarBoletin();
                 break;
             case 0:
                 salir();
