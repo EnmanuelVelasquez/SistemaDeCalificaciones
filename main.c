@@ -7,7 +7,6 @@
 #include "estudiante.h"
 
 Menu option;
-int totalAdmins = 0; // Variables globales
 
 // Declaración de funciones
 Menu menuPrincipal();

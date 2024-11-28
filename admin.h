@@ -16,12 +16,6 @@ typedef struct {
     char contrasena[50]; // contrasena del usuario
 } Admin;
 
-
-extern int totalAdmins;
-Admin admins[MAXADMINS]; 
-//void menuPrincipalAdmin();
-
-
 // Definición de las funciones de admin:
 Admin crearAdmin();
 void mostrarAdmin();
@@ -35,80 +29,6 @@ void menuGestionCruds();
 void menuGestionAdmin();
 void manejarAdmin();
 void cerrarSesion();
-
-// Función para cargar los datos de los administradores desde el archivo
-/*void cargarAdmins() {
-    FILE *archivoAdmins = fopen("data/admin.txt", "r");
-    if (archivoAdmins == NULL) {
-        printf("Error al abrir el archivo admin.txt\n");
-        return;
-    }
-    totalAdmins = 0; // Reinicia el contador de administradores
-    // Lee cada línea del archivo con el formato separado por comas
-    while (fscanf(archivoAdmins, "%d,%49[^,],%49[^\n]\n", &admins[totalAdmins].id, admins[totalAdmins].nombre, admins[totalAdmins].contrasena) == 3) {
-        totalAdmins++;
-        // Verifica si se alcanzó el límite de administradores
-        if (totalAdmins >= MAXADMINS) {
-            printf("Límite de admins alcanzado. Aumenta el tamaño de MAXADMINS.\n");
-            break;
-        }
-    }
-    printf("Administradores cargados correctamente.\n");
-    fclose(archivoAdmins);
-}*/
-
-/*void mostrarAdmin() {
-    //cargarAdmins();
-    Admin admin;
-    while (scanf(Admin admins[], "%19[^,],%d,%49[^,],%49[^\n]\n", admins[totalAdmins].tipo, &admins[totalAdmins].id, admins[totalAdmins].nombre, admins[totalAdmins].contrasena) == 4) {
-        printf("Admin leído: Tipo=%s, ID=%d, Nombre=%s, contrasena=%s\n", admins[totalAdmins].tipo, admins[totalAdmins].id, admins[totalAdmins].nombre, admins[totalAdmins].contrasena);
-        totalAdmins++;
-}*/
-
-/*void menuGestionAdmin() {
-    int opcion;
-    do {
-        printf("\nMenú De Gestión De Administradores\n");
-        printf("1. Crear administrador\n");
-        printf("2. Mostrar administrador\n");
-        printf("3. Actualizar administrador\n");
-        printf("4. Eliminar administrador\n");
-        printf("0. volver al menú principal\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
-
-        switch(opcion) {
-            case 1:
-                if (totalAdmins < MAXADMINS) {
-                    Admin admin = crearAdmin();
-                    admins[totalAdmins] = admin;
-                    totalAdmins++;
-                    guardarAdmins(admins, totalAdmins);
-                } else {
-                    printf("El máximo número de estudiantes ha sido alcanzado.\n");
-                }
-                break;
-                break;
-            case 2:
-                //mostrarAdmin();
-                break;
-            case 3:
-                //actualizarAdmin();
-                break;
-            case 4:
-                //eliminarAdmin();
-                break;
-            case 0:
-                printf("Volviendo al menú principal...\n");
-                Sleep(2000);
-                menuPrincipalAdmin();
-                break;
-            default:
-                printf("opcion no válida\n");
-                break;
-        }
-    } while(opcion != 0);
-}*/
 
 //Inicialización de las funciones:
 Admin crearAdmin(){
@@ -191,7 +111,7 @@ void leerArchvivosAdmin(Admin *admins, int *tamanoVectorAdmins){
          archivoAdmins = fopen("data/admins.bat", "wb"); 
          // Validamos nuevamente que esté creado
         if (archivoAdmins == NULL){
-            FILE_ERROR("Error al crear el archivo de estudiantes"); // Retorna un código de error
+            FILE_ERROR("Error al crear el archivo de estudiantes"); //La macro finaliza el programa y muestra el mensaje
         }
         // Inicializa el tamaño del vector de estudiantes en 0 para indicar que no hay nadie
     *tamanoVectorAdmins = 0; 
@@ -283,6 +203,7 @@ void menuPrincipalAdmin(){
                         }else if(validarId == admins[contador].id){
                             printf("\nEstudiante encontrado!\n");
                             admins[contador] = actualizarAdmin(admins, contador);
+                            guardararchivoAdmin(admins, tamanoVectorAdmins);
                         }
                     }
                 }
@@ -323,7 +244,7 @@ void menuGestionCruds(){
         printf("\nMenú Administrador\n");
         printf("1. Gestionar administrador\n");
         printf("2. Gestionar docente\n");
-        printf("3. Gestionar Estudiante\n");
+        printf("3. Gestionar estudiante\n");
         printf("4. Gestionar asignatura\n");
         printf("5. Gestionar calificación\n");
         printf("6. Volver al menú principal\n");
@@ -340,8 +261,8 @@ void menuGestionCruds(){
             case 3:
                 menuPrincipalEstudiante();
                 break;
-            case 6:
-                break;
+            case 4:
+                menuPrincipalAsignatura();
                 break;
             case 0:
                 salir();

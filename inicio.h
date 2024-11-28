@@ -1,6 +1,7 @@
+//Definimos la macro INICIO_H:
 #ifndef INICIO_H
 #define INICIO_H
-
+//Incluímos las librerías y otros archivos.h que vamos a utilizar:
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -33,10 +34,10 @@ Menu menuPrincipal() {
             menuGestionCruds();
             break;
         case MenuPrincipalDocente:
-            menuPrincipalDocente();
+            menuInteraccionDocente();
             break;
         case MenuPrincipalEstudiante:
-            menuPrincipalEstudiante();
+            menuInteraccionEstudiante();
             break;
         default:
             printf("Opción no válida.\n");
