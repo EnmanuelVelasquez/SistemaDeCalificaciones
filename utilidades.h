@@ -11,18 +11,19 @@
 #define MAXADMINS 10
 #define MAXESTUDIANTES 10
 #define MAXDOCENTES 10
-#define MAXASIGNATURAS 10
+#define MAXASIGNATURAS 2
 #define MAXCALIFICACIONES 6
 
 //macros funcionales:
 #define FILE_ERROR(mensaje) fprintf(stderr, "Error: %s\n", mensaje); exit(EXIT_FAILURE)
+#define ABRIR_ARCHIVO(ruta, modo) fopen(ruta, modo)
+#define CERRAR_ARCHIVO(archivo) { if (archivo) fclose(archivo); }
 
 
 //enumerador para notas:
 typedef enum{
-    MUYBAJO,
-    MUYBAJO,
-    BAJO,
+    MUYBAJO ,
+    BAJO ,
     ACEPTABLE,
     ALTO,
     EXCELENTE

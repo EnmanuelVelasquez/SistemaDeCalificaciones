@@ -10,7 +10,6 @@
 typedef struct {
     int id;
     char nombre[50];
-    float calificaciones[MAXCALIFICACIONES];
 } Asignatura;
 
 // Definición de las funciones de Asignatura:
@@ -29,9 +28,6 @@ Asignatura crearAsignatura(){
     scanf("%d", &asignatura.id);
     printf("Ingrese el nombre de la asignatura: \n");
     scanf("%s", asignatura.nombre);
-    for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
-        asignatura.calificaciones[contador] = 0;    
-        }
     printf("\nAsignatura creada correctamente\n");
     return asignatura;
 }
@@ -39,10 +35,6 @@ Asignatura crearAsignatura(){
 void mostrarAsignatura(Asignatura asignatura){
     printf("Id: %d\n", asignatura.id);
     printf("Nombre: %s\n", asignatura.nombre);
-    printf("Calificaciones: ");
-    for(int contador = 0; contador < MAXCALIFICACIONES; contador++){
-        printf("%.1f ", asignatura.calificaciones[contador]);
-    }
     printf("\n");
 }
 
@@ -50,7 +42,6 @@ void menuActualizarAsignatura(){
     printf("\nMenu para actualizar datos de una asignatura\n");
     printf("1. Cambiar id\n");
     printf("2. Cambiar nombre\n");
-    printf("3. Cambiar calificacion\n");
     printf("0. Salir\n");
     printf("Seleccione una opcion: ");
 }
@@ -58,7 +49,6 @@ void menuActualizarAsignatura(){
 Asignatura actualizarAsignatura(Asignatura *asignaturas, int posicionModificarAsignatura){
     //Se recibe una posición del vector Asignaturas para seleccionar qué se desea modificar:
     int opcion = 1;    
-    int posicionCalificacion;
     while (opcion != 0){
         menuActualizarAsignatura();
         scanf("%d", &opcion);
@@ -72,12 +62,6 @@ Asignatura actualizarAsignatura(Asignatura *asignaturas, int posicionModificarAs
             printf("Ingrese el nuevo nombre del asignatura: ");
             scanf("%s", asignaturas[posicionModificarAsignatura].nombre);
             printf("\nNombre actualizado exitosamente!\n");
-            break;
-        case 3:
-            printf("\nIngrese la posición de la calificacion a modificar: ");
-            scanf("%d", &posicionCalificacion);
-            scanf("\nIngrse el valor de la calificacion: %f", &asignaturas[posicionModificarAsignatura].calificaciones[posicionCalificacion]);
-            printf("\nCalificacion actualizada exitosamente!\n");
             break;
         case 0:
             printf("\nHas salido del menu de crear asignatura\n");

@@ -17,28 +17,42 @@ typedef struct {
 } Admin;
 
 // Definición de las funciones de admin:
+int buscarAdminPorId(Admin *admins, int tamanoVectorAdmins, int idAdmin);
 Admin crearAdmin();
 void mostrarAdmin();
-Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmin); 
+Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmins, int idAdmin); 
 void guardarAdmins(Admin *admins, int tamanoVectorAdmin);
 void leerArchvivosAdmin(Admin *admins, int *tamanoVectorAdminAdmins);
 void eliminarAdmin();
 void menuPrincipalAdmin();
 void menuGestionCruds();
-
 void menuGestionAdmin();
 void manejarAdmin();
 void cerrarSesion();
 
 //Inicialización de las funciones:
-Admin crearAdmin(){
+int buscarAdminPorId(Admin *admins, int tamanoVectorAdmins, int idAdmin){//Función recursiva
+    if (tamanoVectorAdmins == 0) {
+        return -1; // No encontrado
+    }
+    if (admins[tamanoVectorAdmins - 1].id == idAdmin) {
+        return tamanoVectorAdmins - 1; // Retorna el índice encontrado
+    }
+    return buscarAdminPorId(admins, tamanoVectorAdmins - 1, idAdmin);
+}
+
+Admin crearAdmin(Admin *admins, int tamanoVectorAdmins){
     Admin admin;
     printf("Ingrese ID del administrador: ");
     scanf("%d", &admin.id);
+    if(buscarAdminPorId(admins, tamanoVectorAdmins, admin.id) != -1){
+        printf("El ID ya está en uso. Intente nuevamente.\n");
+        return crearAdmin(admins, tamanoVectorAdmins);
+    }
     printf("Ingrese nombre del administrador: ");
-    scanf("%s", admin.nombre);
+    scanf("%49s", admin.nombre);
     printf("Ingrese contrasena del administrador: ");
-    scanf("%s", admin.contrasena);
+    scanf("%49s", admin.contrasena);
     printf("\nAdministrador creado exitosamente.\n");
     return admin;
 }
@@ -59,8 +73,12 @@ void menuActualizarAdmin(){
     printf("Seleccione una opcion: ");
 }
 
-Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmin){
-    //Se recibe una posición del vector estudiantes para seleccionar qué se desea modificar:
+Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmins, int idAdmin){
+    int indice = buscarAdminPorId(admins, tamanoVectorAdmins, idAdmin);
+    if (indice == -1) {
+        printf("Administrador no encontrado.\n");
+        return admins[indice];
+    }
     int opcion = 1;
     while (opcion != 0) {
         menuActualizarAdmin();
@@ -68,172 +86,131 @@ Admin actualizarAdmin(Admin *admins, int tamanoVectorAdmin){
         switch (opcion) {
             case 1:
                 printf("Ingrese el nuevo ID del administrador: ");
-                scanf("%d", &admins[tamanoVectorAdmin].id);
-                printf("ID actualizado exitosamente.\n");
-                break;  
+                scanf("%d", &admins[indice].id);
+                break;
             case 2:
                 printf("Ingrese el nuevo nombre del administrador: ");
-                scanf("%s", admins[tamanoVectorAdmin].nombre);
-                printf("Nombre actualizado exitosamente.\n");
+                scanf("%49s", admins[indice].nombre);
                 break;
             case 3:
-                printf("Ingrese la nueva contrasena del administrador: ");
-                scanf("%s", admins[tamanoVectorAdmin].contrasena);
-                printf("contrasena actualizada exitosamente.\n");
+                printf("Ingrese la nueva contraseña del administrador: ");
+                scanf("%49s", admins[indice].contrasena);
                 break;
             case 0:
-                printf("\nHas salido del menu de actualización\n");
+                printf("Saliendo del menu de actualización.\n");
                 break;
             default:
-                printf("\nOpcion no válida\n");
+                printf("Opción no válida.\n");
                 break;
         }
     }
-    //Se retorna el estudiante modificado
-    return admins[tamanoVectorAdmin];
+    return admins[indice];
 }
 
 void guardararchivoAdmin(Admin *admins, int tamanoVectorAdmins){
-    FILE *archivoAdmins = fopen("data/admins.bat", "wb"); //Modifica todo el archivoEstudiantes en binario, cargando y actualizando todo el vector
+    FILE *archivoAdmins = ABRIR_ARCHIVO("data/admins.bat", "wb"); //Modifica todo el archivoEstudiantes en binario, cargando y actualizando todo el vector
     if(archivoAdmins == NULL){
         FILE_ERROR("Error al crear el archivo de estudiantes");// Retorna un código de error
     }
-    fwrite(admins, sizeof(Estudiante), tamanoVectorAdmins, archivoAdmins);
-    fclose(archivoAdmins);
+    fwrite(admins, sizeof(Admin), tamanoVectorAdmins, archivoAdmins);
+    CERRAR_ARCHIVO(archivoAdmins);
 }
 
-void leerArchvivosAdmin(Admin *admins, int *tamanoVectorAdmins){
-    // Lee el archivo estudiantes en binario
-    FILE *archivoAdmins = fopen("data/admins.bat", "rb");
-    //Evaluamos si no está creado 
-    if (archivoAdmins == NULL){
-         // En caso que no esté creado, lo creamos de tipo binario
-         archivoAdmins = fopen("data/admins.bat", "wb"); 
-         // Validamos nuevamente que esté creado
-        if (archivoAdmins == NULL){
-            FILE_ERROR("Error al crear el archivo de estudiantes"); //La macro finaliza el programa y muestra el mensaje
+void leerArchivosAdmin(Admin *admins, int *tamanoVectorAdmins){
+    // Lee el archivo admins en binario
+    FILE *archivoAdmins = ABRIR_ARCHIVO("data/admins.bat", "Rb"); 
+    // Evaluamos si no está creado
+    if (archivoAdmins == NULL) {
+        // En caso que no esté creado, lo creamos de tipo binario
+        archivoAdmins = ABRIR_ARCHIVO("data/admins.bat", "wb");  
+
+        // Validamos nuevamente que esté creado
+        if (archivoAdmins == NULL) {
+            FILE_ERROR("Error al crear el archivo de admins"); // La macro finaliza el programa y muestra el mensaje
         }
-        // Inicializa el tamaño del vector de estudiantes en 0 para indicar que no hay nadie
-    *tamanoVectorAdmins = 0; 
-    fclose(archivoAdmins); // Cierra el archivo creado
-    return;
+
+        // Inicializa el tamaño del vector de admins en 0 para indicar que no hay nadie
+        *tamanoVectorAdmins = 0; 
+        CERRAR_ARCHIVO(archivoAdmins); // Cierra el archivo creado
+        return;
     }
     // Inicializa el contador
     *tamanoVectorAdmins = 0; 
-    while (*tamanoVectorAdmins < MAXESTUDIANTES && fread(&admins[*tamanoVectorAdmins], sizeof(Estudiante), 1, archivoAdmins)) {
+    // Lee los datos de los admins hasta el límite MAXADMINS o hasta que no haya más datos
+    while (*tamanoVectorAdmins < MAXADMINS && fread(&admins[*tamanoVectorAdmins], sizeof(Admin), 1, archivoAdmins)) {
         (*tamanoVectorAdmins)++;
     }
+    CERRAR_ARCHIVO(archivoAdmins); // Cierra el archivo al final
 }
 
 void eliminarAdmin(Admin *admins, int *tamanoVectorAdmins, int idAdmin){
-    //Suponemos que el estudiante no existe, inializamos en -1:
-    int poscionEstudianteEliminar = -1;
-    for (int contador = 0; contador < *tamanoVectorAdmins; contador++) {
-        if (admins[contador].id == idAdmin){ //Buscamos el id del estudiante en el vector
-            poscionEstudianteEliminar = contador; //Asignamos la posición a la variable que vamos a usar
-            break;
-        }
+    int indice = buscarAdminPorId(admins, *tamanoVectorAdmins, idAdmin);
+    if (indice == -1) {
+        printf("Administrador con ID %d no encontrado.\n", idAdmin);
+        return;
     }
-    if (poscionEstudianteEliminar != -1) {
-        for (int contador = poscionEstudianteEliminar; contador < *tamanoVectorAdmins - 1; contador++){
-            //Reescribimos todo el vector desde el punto de referencia del estudiante a eliminar
-            admins[contador] = admins[contador + 1];
-            //Los estudiantes modificados fueron movidos una posición a la izquierda
-        }
-        (*tamanoVectorAdmins)--; //Reajustamos el tamaño del vector
-        printf("Estudiante con ID %d eliminado exitosamente.\n", idAdmin);
-    } else {
-        printf("Estudiante con ID %d no encontrado.\n", idAdmin);
+    for (int contador = indice; contador < *tamanoVectorAdmins - 1; contador++) {
+        admins[contador] = admins[contador + 1];
     }
+    (*tamanoVectorAdmins)--;
+    printf("Administrador con ID %d eliminado exitosamente.\n", idAdmin);
 }
 
-void menuPrincipalAdmin(){
+void menuPrincipalAdmin() {
     Admin admins[MAXADMINS];
-    int tamanoVectorAdmins = 0;
+    int tamanoVectorAdmins;
     int opcion = 1;
-    int validarId;
 
-    leerArchvivosAdmin(admins, &tamanoVectorAdmins);//Si hay datos en el vector, los leemos
+    leerArchivosAdmin(admins, &tamanoVectorAdmins);
     
-    while(opcion != 0){
+    while (opcion != 0) {
         printf("\nMenu principal administradores\n");
         printf("1. Crear administrador\n");
-        printf("2. Mostrar administrador\n");
+        printf("2. Mostrar administradores\n");
         printf("3. Modificar administrador\n");
         printf("4. Eliminar administrador\n");
         printf("0. Salir\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &opcion);
-        switch (opcion){
+        switch (opcion) {
             case 1:
-                // Validamos que halla espacio para crear más estudiantes
-                if (tamanoVectorAdmins < MAXESTUDIANTES) {
-                    Admin admin = crearAdmin();
-                    admins[tamanoVectorAdmins] = admin;
+                if (tamanoVectorAdmins < MAXADMINS) {
+                    admins[tamanoVectorAdmins] = crearAdmin(admins, tamanoVectorAdmins);
                     tamanoVectorAdmins++;
-                    guardararchivoAdmin(admins, tamanoVectorAdmins); //Guardamos el estudiante después de crearlo
+                    guardararchivoAdmin(admins, tamanoVectorAdmins);
                 } else {
-                    printf("El máximo número de administradores ha sido alcanzado.\n");
+                    printf("No se pueden agregar más administradores.\n");
                 }
                 break;
             case 2:
-                //Se imprimen todos los estudiantes guardados
-                if(tamanoVectorAdmins == 0){
-                    printf("\nNo hay administradores para mostar!\n");
-                    break;
-                }else{
-                    for(int contador = 0; contador < tamanoVectorAdmins; contador++){
-                    printf("\nEstudiante %d:\n", contador);
-                    mostrarAdmin(admins[contador]);
+                if (tamanoVectorAdmins == 0) {
+                    printf("No hay administradores registrados.\n");
+                } else {
+                    for (int contador = 0; contador < tamanoVectorAdmins; contador++){
+                        printf("\nAdmin %d:\n", contador);
+                        mostrarAdmin(admins[contador]);
                     }
                 }
                 break;
             case 3:
-                if(tamanoVectorAdmins == 0){
-                    printf("\nNo hay administradores para modificar!\n");
-                    break;
-                }else{
-                    //Validamos la existencia del estudiante en el vector
-                    printf("\nIngrese el ID del administrador a modificar: ");
-                    scanf("%d", &validarId);
-                    for(int contador = 0; contador < tamanoVectorAdmins; contador++){
-                        if(validarId != admins[contador].id){
-                            printf("\nEl ID ingresado no corresponde a ningun administrador!\n");
-                            break;
-                        }else if(validarId == admins[contador].id){
-                            printf("\nEstudiante encontrado!\n");
-                            admins[contador] = actualizarAdmin(admins, contador);
-                            guardararchivoAdmin(admins, tamanoVectorAdmins);
-                        }
-                    }
-                }
+                printf("Ingrese el ID del administrador a modificar: ");
+                int idModificar;
+                scanf("%d", &idModificar);
+                actualizarAdmin(admins, tamanoVectorAdmins, idModificar);
+                guardararchivoAdmin(admins, tamanoVectorAdmins);
                 break;
             case 4:
-            if(tamanoVectorAdmins == 0){
-                    printf("\nNo hay administradores para eliminar!\n");
-                    break;
-                }else{
-                    //Validamos la existencia del estudiante en el vector
-                    printf("\nIngrese el ID del administrador a eliminar: ");
-                    scanf("%d", &validarId);
-                    for(int contador = 0; contador < tamanoVectorAdmins; contador++){
-                        if(validarId != admins[contador].id){
-                            printf("\nEl ID ingresado no corresponde a ningun administrador!\n");
-                            break;
-                        }else if(validarId == admins[contador].id){
-                            printf("\nAdministrador encontrado!\n");
-                            eliminarAdmin(admins, &tamanoVectorAdmins, validarId);
-                            guardararchivoAdmin(admins, tamanoVectorAdmins); //Guardamos el estudiante después de crearlo
-                            break;
-                        }
-                    }
-                }
+                printf("Ingrese el ID del administrador a eliminar: ");
+                int idEliminar;
+                scanf("%d", &idEliminar);
+                eliminarAdmin(admins, &tamanoVectorAdmins, idEliminar);
+                guardararchivoAdmin(admins, tamanoVectorAdmins);
                 break;
             case 0:
-                printf("\nHas salido del menu de administrador\n");
+                printf("Saliendo del menú de administradores.\n");
                 break;
             default:
-                break;
+                printf("Opción no válida.\n");
         }
     }
 }
