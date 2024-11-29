@@ -1,0 +1,31 @@
+***************** INFORME GENERAL ******************
+
+Institución: Universidad Tecnológica de Pereira
+
+Nombre del docente: Gabriel Sanchez
+Id del docente: 456
+
+Asignaturas:
+-------------------------------------------------------------
+Asignatura Castellano: 
+ID asignatura: 34
+
+Nombre estudiante: Juan Alimana
+Id estudiante: 123
+Promedio final asignatura: 3.6 / Aprobado
+Nombre estudiante: Kayn Velez
+Id estudiante: 234
+Promedio final asignatura: 3.6 / Aprobado
+-------------------------------------------------------------
+Asignatura Matematicas: 
+ID asignatura: 12
+
+Nombre estudiante: Juan Alimana
+Id estudiante: 123
+Promedio final asignatura: 3.6 / Aprobado
+Nombre estudiante: Kayn Velez
+Id estudiante: 234
+Promedio final asignatura: 3.6 / Aprobado
+-------------------------------------------------------------
+
+***************************************************************

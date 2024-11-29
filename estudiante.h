@@ -8,6 +8,19 @@
 #include "admin.h"
 #include "asignatura.h"
 
+// Definición de las constantes para los rangos de calificación
+#define CALIFICACION_MINIMA 0.0
+#define CALIFICACION_MINIMA_APROBACION 3.0
+#define CALIFICACION_MAXIMA 5.0
+
+// Definición de los estados de los estudiantes
+#define ESTADO_APROBADO "Aprobado"
+#define ESTADO_REPROBADO "Reprobado"
+
+// Macro para evaluar el estado del estudiante
+#define EVALUAR_ESTADO(promedioTotal) \
+    ((promedioTotal) >= CALIFICACION_MINIMA_APROBACION ? ESTADO_APROBADO : ESTADO_REPROBADO)
+
 // Estructura del Estudiante
 typedef struct {
     int id;               // ID del estudiante
@@ -30,6 +43,9 @@ void leerArchivosEstudiante(Estudiante *estudiantes, int *tamanoVectorEstudiante
 void eliminarEstudiante(Estudiante *estudiantes, int *tamanoVectorEstudiantes, int idEstudiante);
 void menuPrincipalEstudiante();
 void menuInteraccionDocente();
+float calcularPromedioRecursivo(float calificaciones[], int numCalificaciones, int indice);
+float obtenerPromedio(float calificaciones[], int numCalificaciones);
+void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
 
 //Buscar estudiante por id
 int buscarEstudiantePorId(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante) {
@@ -69,23 +85,29 @@ Estudiante asignarAsignaturasEstudiante(Estudiante *estudiantes, int tamanoVecto
 
     int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
     int numeroAsignaturas;
-        if (indiceEstudiante == -1){
-            printf("Estudiante no encontrado.\n");
-            return estudiantes[0]; //Lo retorna vacío
+
+    if(indiceEstudiante == -1){
+        printf("Estudiante no encontrado.\n");
+        return estudiantes[0]; //Lo retorna vacío
+    }
+    printf("\nIngrese cuantas asignaturas desea asignar: ");
+    scanf("%d", &numeroAsignaturas);
+    if(numeroAsignaturas < MAXASIGNATURAS){
+        printf("El numero de asignaturas no puede ser mayor que el maximo permitido.\n");
+        return estudiantes[0];
+    }
+    for (int contador = 0; contador < numeroAsignaturas; contador++) {
+        int idAsigntura;
+        for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+            printf("\nAsignatura %d:\n", contador + 1);
+            mostrarAsignatura(asignaturas[contador]);
         }
-        printf("\nIngrese cuantas asignaturas desea asignar: ");
-        scanf("%d", &numeroAsignaturas);
-        for (int contador = 0; contador < numeroAsignaturas; contador++) {
-            int idAsigntura;
-            for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-                printf("\nAsignatura %d:\n", contador + 1);
-                mostrarAsignatura(asignaturas[contador]);
-            }
-            printf("Ingrese el id de la asignatura a asignar: ");
-            scanf("%d", &idAsigntura);
-            int indiceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsigntura);
-            estudiantes[indiceEstudiante].asignaturas[contador] = asignaturas[indiceAsignatura];
-        }
+        printf("Ingrese el id de la asignatura a asignar: ");
+        scanf("%d", &idAsigntura);
+        int indiceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsigntura);
+        estudiantes[indiceEstudiante].asignaturas[contador] = asignaturas[indiceAsignatura];
+        printf("\nAsignatura asignada exitosamente.\n");
+    }
     return estudiantes[indiceEstudiante];
 }
 
@@ -103,6 +125,7 @@ void mostrarEstudiante(Estudiante estudiante){
     for (int contador = 0; contador < tamanoVectorAsignaturas; contador++) {
         printf("Asignatura %d: %s\n", contador + 1, estudiante.asignaturas[contador].nombre);
     }
+
 }
 
 //Muestra menu para actualizar calificaciones de un estudiante
@@ -275,7 +298,7 @@ void eliminarEstudiante(Estudiante *estudiantes, int *tamanoVectorEstudiantes, i
         printf("\nEliminacion cancelada.\n");
         return;
     }
-    for (int contador = contador; contador < *tamanoVectorEstudiantes - 1; contador++) {
+    for (int contador = 0; contador < *tamanoVectorEstudiantes - 1; contador++) {
         estudiantes[contador] = estudiantes[contador + 1];
     }
     (*tamanoVectorEstudiantes)--;
@@ -283,7 +306,7 @@ void eliminarEstudiante(Estudiante *estudiantes, int *tamanoVectorEstudiantes, i
 }
 
 // Menú principal de los estudiantes
-void menuPrincipalEstudiante() {
+void menuPrincipalEstudiante(){
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorEstudiantes;
     int opcion = 1;
@@ -389,16 +412,14 @@ void mostrarCalificacionesEstudiante(int idEstudiante){
             printf("ID: %d\n", estudiantes[indiceEstudiante].asignaturas[contador].id);
             printf("Nombre: %s\n", estudiantes[indiceEstudiante].asignaturas[contador].nombre);
             printf("Calificaciones: \n");
-            
             for(int contador2 = 0; contador2 < MAXCALIFICACIONES; contador2++) {
                 printf("%.1f ", estudiantes[indiceEstudiante].asignaturas[contador].calificaciones[contador2]);
             }
-            printf("\n"); // Añadir un salto de línea después de las calificaciones
+            printf("\n");
         }
     }
 }
                 
-
 void menuInteraccionEstudiante(){
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorEstudiantes;
@@ -425,7 +446,11 @@ void menuInteraccionEstudiante(){
                 mostrarCalificacionesEstudiante(idEstudiante);
                 break;
             case 2:
-                //generarBoletin();
+                printf("\nIngrese el ID del estudiante a generar boletin: ");
+                int idEstudianteBoletin;
+                scanf("%d", &idEstudianteBoletin);
+                generarBoletin(estudiantes, tamanoVectorEstudiantes, idEstudianteBoletin);
+                printf("\nBoletin generado exitosamente.\n");
                 break;
             case 0:
                 salir();
@@ -436,6 +461,73 @@ void menuInteraccionEstudiante(){
         }
     }
 
+}
+
+// Función recursiva para calcular el promedio
+float calcularPromedioRecursivo(float calificaciones[], int numCalificaciones, int indice) {
+    if (indice == numCalificaciones) {
+        return 0; // Caso base: No quedan más calificaciones
+    }
+    // Suma actual más la recursión
+    return calificaciones[indice] + calcularPromedioRecursivo(calificaciones, numCalificaciones, indice + 1);
+}
+
+// Función para invocar el cálculo del promedio
+float obtenerPromedio(float calificaciones[], int numCalificaciones){
+    return calcularPromedioRecursivo(calificaciones, numCalificaciones, 0) / numCalificaciones;
+}
+
+
+//BOLETÍN ESTUDIANTE // CADA ESTUDIANTE CON SUS ASIGNATURAS, NOTAS Y PROMEDIO FINAL
+
+void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorAsignaturas;
+    float promedio;
+    float auxiliar;
+    float promedioTotal;
+
+
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+    
+    int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+
+    FILE *archivoBoletin = ABRIR_ARCHIVO("data/boletin.txt", "wb"); // Crear archivo de texto
+    if (archivoBoletin == NULL) {
+        FILE_ERROR("Error al crear el archivo de boletin");
+    }
+    fprintf(archivoBoletin, "****************** BOLETÍN DE CALIFICACIONES ******************\n\n");
+    fprintf(archivoBoletin, "Institución: Universidad Tecnológica de Pereira\n\n");
+    fprintf(archivoBoletin, "Nombre del estudiante: %s %s\n", estudiantes[indiceEstudiante].nombre, estudiantes[indiceEstudiante].apellido);
+    fprintf(archivoBoletin, "Id del estudiante: %d\n\n", estudiantes[indiceEstudiante].id);
+    
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+        promedio = obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES);
+        auxiliar += promedio;
+    }
+    promedioTotal = auxiliar / tamanoVectorAsignaturas;
+
+    fprintf(archivoBoletin, "Promedio total: %.1f / ", promedioTotal);
+    fprintf(archivoBoletin, EVALUAR_ESTADO(promedioTotal));
+
+    fprintf(archivoBoletin, "\n\nAsignaturas:\n");
+    fprintf(archivoBoletin, "-------------------------------------------------------------\n");
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++) {
+        if(estudiantes[indiceEstudiante].asignaturas[contador].id == asignaturas[contador].id){
+            fprintf(archivoBoletin, "Asignatura %d: \n", contador + 1);
+            fprintf(archivoBoletin, "ID: %d\n", estudiantes[indiceEstudiante].asignaturas[contador].id);
+            fprintf(archivoBoletin, "Nombre: %s\n", estudiantes[indiceEstudiante].asignaturas[contador].nombre);
+            fprintf(archivoBoletin, "Calificaciones: \n");
+            for(int contador2 = 0; contador2 < MAXCALIFICACIONES; contador2++) {
+                fprintf(archivoBoletin,"%.1f | ", estudiantes[indiceEstudiante].asignaturas[contador].calificaciones[contador2]);
+            }
+            fprintf(archivoBoletin, "\nPromedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES));
+            fprintf(archivoBoletin, EVALUAR_ESTADO(obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES)));
+            fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
+        }
+    }
+    fprintf(archivoBoletin, "\n***************************************************************");
+    CERRAR_ARCHIVO(archivoBoletin);
 }
 
 #endif // ESTUDIANTE_H

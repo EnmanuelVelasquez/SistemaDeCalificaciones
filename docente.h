@@ -12,6 +12,7 @@
 typedef struct {
     int id;             // ID del docente
     char nombre[50];    // Nombre del docente
+    char apellido[50];  // Apellido del docente 
     Asignatura asignaturas[MAXASIGNATURAS]; // Asignatura que enseña el docente
 } Docente;
 
@@ -25,6 +26,8 @@ void leerArchivosDocente(Docente *docentes, int *tamanoVectorDocentes);
 void eliminarDocente(Docente *docentes, int *tamanoVectorDocentes, int idDocente);
 void menuPrincipalDocente();
 void menuInteraccionDocente();
+void generarListadoAsignaturas();
+void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme);
 
 // Inicialización de las funciones:
 
@@ -48,6 +51,8 @@ Docente crearDocente(Docente *docentes, int tamanoVectorDocentes) {
     }
     printf("Ingrese el nombre del docente sin espacios: ");
     scanf("%49s", docente.nombre);
+    printf("Ingrese el apellido del docente sin espacios: ");
+    scanf("%49s", docente.apellido);
     printf("\nDocente creado exitosamente.\n");
     return docente;
 }
@@ -55,12 +60,14 @@ Docente crearDocente(Docente *docentes, int tamanoVectorDocentes) {
 void mostrarDocente(Docente docente) {
     printf("\nID: %d\n", docente.id);
     printf("Nombre: %s\n", docente.nombre);
+    printf("Apellido: %s\n", docente.apellido);
 }
 
 void menuActualizarDocente(){
     printf("\nMenu para actualizar datos de un docente\n");
     printf("\n1. Cambiar ID\n");
     printf("2. Cambiar nombre\n");
+    printf("3. Cambiar apellido\n");
     printf("0. Regresar al menu anterior\n");
     printf("\nSeleccione una opcion: ");
 }
@@ -86,6 +93,10 @@ Docente actualizarDocente(Docente *docentes, int tamanoVectorDocentes, int idDoc
                 scanf("%49s", docentes[indice].nombre);
                 printf("\nNombre actualizado exitosamente.\n");
                 break;
+            case 3:
+                printf("\nIngrese el nuevo apellido del docente sin espacios: ");
+                scanf("%49s", docentes[indice].apellido);
+                printf("\nApellido actualizado exitosamente.\n");
                 break;
             case 0:
                 printf("\nSaliendo del menu de actualizacion.\n");
@@ -210,16 +221,21 @@ void menuPrincipalDocente(){
 }
 
 void menuInteraccionDocente(){
+    Asignatura asignaturas[MAXASIGNATURAS];
     Docente docentes[MAXDOCENTES];
+    int tamanoVectorAsignaturas;
     int tamanoVectorDocentes;
     int opcion = 1;
 
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
     leerArchivosDocente(docentes, &tamanoVectorDocentes);
     
     while(opcion != 0){
         printf("\n--- Menu de Docente ---\n");
         printf("\n1. Gestionar estudiantes\n");
         printf("2. Gestionar asignaturas\n");
+        printf("3. Generar informe de asignaturas\n");
+        printf("4. Generar informe general\n");
         printf("0. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
@@ -232,6 +248,35 @@ void menuInteraccionDocente(){
             case 2:
                 menuPrincipalAsignatura();
                 break;
+            case 3:
+                for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
+                        printf("\nDocente %d:\n", contador+1);
+                        mostrarDocente(docentes[contador]);
+                    }
+                int idAsignatura; 
+                int idDocente;      
+                printf("\nIngrese el ID del docente a generar listado de asignaturas: ");
+                scanf("%d", &idDocente);
+                for (int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+                    printf("\nAsignatura %d:\n", contador + 1);
+                    mostrarAsignatura(asignaturas[contador]);
+                    }
+                printf("\nIngrese la asignatura a generar listado: ");
+                scanf("%d", &idAsignatura);
+                generarListadoAsignaturas(docentes, tamanoVectorDocentes, idDocente, idAsignatura);
+                printf("\nListado generado exitosamente.\n");
+                break;
+            case 4:
+                for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
+                        printf("\nDocente %d:\n", contador+1);
+                        mostrarDocente(docentes[contador]);
+                    }
+                printf("\nIngrese el ID del docente a generar informe: ");
+                int idDocenteInforme;
+                scanf("%d", &idDocenteInforme);
+                generarInforme(docentes, tamanoVectorDocentes, idDocenteInforme);
+                printf("\nInforme generado exitosamente.\n");
+                break;
             case 0:
                 salir();
                 break;
@@ -242,5 +287,94 @@ void menuInteraccionDocente(){
     } 
 }
 
+//INFORME ASIGNATURAS // TODOS LOS ESTUDIANTES CON NOTAS DEL ESTUDIANTE 
+void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int idDocente, int idAsignatura){
+    Estudiante estudiantes[MAXESTUDIANTES];
+    Asignatura asignaturas[MAXASIGNATURAS];
+    int tamanoVectorEstudiantes;
+    int tamanoVectorAsignaturas;
+    
+    leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+
+    int indiceDocente = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocente);
+    int indceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsignatura);
+
+    FILE *archivoBoletin = ABRIR_ARCHIVO("data/informe.txt", "wb"); // Crear archivo de texto
+    if (archivoBoletin == NULL) {
+        FILE_ERROR("Error al crear el archivo de boletin");
+    }
+    fprintf(archivoBoletin, "***************** INFORME DE ASIGNATURAS ******************\n\n");
+    fprintf(archivoBoletin, "Institución: Universidad Tecnológica de Pereira\n\n");
+    fprintf(archivoBoletin, "Nombre del docente: %s %s\n", docentes[indiceDocente].nombre, docentes[indiceDocente].apellido);
+    fprintf(archivoBoletin, "Id del docente: %d\n\n", docentes[indiceDocente].id);
+
+    fprintf(archivoBoletin, "Asignatura: %s\n", asignaturas[indceAsignatura].nombre);
+    fprintf(archivoBoletin, "\nEstudiantes: \n");
+    fprintf(archivoBoletin, "-------------------------------------------------------------\n");
+    for(int contador = 0; contador < tamanoVectorEstudiantes; contador++){
+        fprintf(archivoBoletin, "%d |", estudiantes[contador].id);
+        fprintf(archivoBoletin, " %s %s ", estudiantes[contador].apellido, estudiantes[contador].nombre);
+        for(int contador2 = 1; contador2 < MAXCALIFICACIONES; contador2++){
+            fprintf(archivoBoletin, "| %.1f", estudiantes[contador].asignaturas[0].calificaciones[contador2]);
+        }
+        fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
+    }
+    fprintf(archivoBoletin, "\n*************************************************************");
+    CERRAR_ARCHIVO(archivoBoletin);
+}
+
+void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme){
+    Asignatura asignaturas[MAXASIGNATURAS];
+    Estudiante estudiantes[MAXESTUDIANTES];
+    int tamanoVectorAsignaturas;
+    int tamanoVectorEstudiantes;
+    float promedio;
+    float auxiliar;
+    float promedioTotal;
+    int indiceEstudiante;
+
+    leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
+    leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
+
+    int indiceDocente = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocenteInforme);
+
+    FILE *archivoBoletin = ABRIR_ARCHIVO("data/informeGeneral.txt", "wb"); // Crear archivo de texto
+    if (archivoBoletin == NULL) {
+        FILE_ERROR("Error al crear el archivo de boletin");
+    }
+
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+        int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, estudiantes[contador].id);
+        promedio = obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES);
+        auxiliar += promedio;
+    }
+
+    promedioTotal = auxiliar / tamanoVectorAsignaturas;
+
+    fprintf(archivoBoletin, "***************** INFORME GENERAL ******************\n\n");
+    fprintf(archivoBoletin, "Institución: Universidad Tecnológica de Pereira\n\n");
+    fprintf(archivoBoletin, "Nombre del docente: %s %s\n", docentes[indiceDocente].nombre, docentes[indiceDocente].apellido);
+    fprintf(archivoBoletin, "Id del docente: %d\n\n", docentes[indiceDocente].id);
+
+    fprintf(archivoBoletin, "Asignaturas:\n");
+    fprintf(archivoBoletin, "-------------------------------------------------------------\n");
+
+    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+        if(estudiantes[contador].asignaturas[contador].id == asignaturas[contador].id){
+            fprintf(archivoBoletin, "Asignatura %s: \n", asignaturas[contador].nombre);
+            fprintf(archivoBoletin, "ID asignatura: %d\n", asignaturas[contador].id);
+            for(int contador2 = 0; contador2 < tamanoVectorAsignaturas; contador2++){
+                fprintf(archivoBoletin, "\nNombre estudiante: %s %s\n", estudiantes[contador2].nombre, estudiantes[contador2].apellido);
+                fprintf(archivoBoletin, "Id estudiante: %d\n", estudiantes[contador2].id);
+                fprintf(archivoBoletin, "Promedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[contador2].asignaturas[contador2].calificaciones, MAXCALIFICACIONES));
+                fprintf(archivoBoletin, EVALUAR_ESTADO(obtenerPromedio(estudiantes[contador2].asignaturas[contador2].calificaciones, MAXCALIFICACIONES)));
+            }
+            fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
+        }
+    }
+    fprintf(archivoBoletin, "\n***************************************************************");
+    CERRAR_ARCHIVO(archivoBoletin);
+}
 
 #endif

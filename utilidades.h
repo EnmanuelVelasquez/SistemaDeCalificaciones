@@ -29,6 +29,7 @@ typedef enum{
     EXCELENTE
 }NOTAS;
 
+//Funciones adicionales
 
 void salir();
 
