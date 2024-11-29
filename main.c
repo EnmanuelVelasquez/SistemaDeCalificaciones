@@ -6,14 +6,7 @@
 #include "admin.h"
 #include "estudiante.h"
 
-Menu option;
-
-//INFORME GENERAL// TODOS LOS ESTUDIANTES CON PROMEDIO FINAL
-
-// Declaración de funciones
-Menu menuPrincipal();
-
 int main(){  
-    option = menuPrincipal(); // Llamar a la función de menu principal
+    menuPrincipal(); // Llamar a la función que controla los menús
     return 0;
 }

@@ -27,7 +27,7 @@ void eliminarDocente(Docente *docentes, int *tamanoVectorDocentes, int idDocente
 void menuPrincipalDocente();
 void menuInteraccionDocente();
 void generarListadoAsignaturas();
-void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme);
+void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme);
 
 // Inicialización de las funciones:
 
@@ -274,7 +274,7 @@ void menuInteraccionDocente(){
                 printf("\nIngrese el ID del docente a generar informe: ");
                 int idDocenteInforme;
                 scanf("%d", &idDocenteInforme);
-                generarInforme(docentes, tamanoVectorDocentes, idDocenteInforme);
+                generarInformeGeneral(docentes, tamanoVectorDocentes, idDocenteInforme);
                 printf("\nInforme generado exitosamente.\n");
                 break;
             case 0:
@@ -300,7 +300,7 @@ void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int 
     int indiceDocente = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocente);
     int indceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsignatura);
 
-    FILE *archivoBoletin = ABRIR_ARCHIVO("data/informe.txt", "wb"); // Crear archivo de texto
+    FILE *archivoBoletin = ABRIR_ARCHIVO("data/informeAsignatura.txt", "wb"); // Crear archivo de texto
     if (archivoBoletin == NULL) {
         FILE_ERROR("Error al crear el archivo de boletin");
     }
@@ -312,6 +312,8 @@ void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int 
     fprintf(archivoBoletin, "Asignatura: %s\n", asignaturas[indceAsignatura].nombre);
     fprintf(archivoBoletin, "\nEstudiantes: \n");
     fprintf(archivoBoletin, "-------------------------------------------------------------\n");
+    fprintf(archivoBoletin, " ID | -- Nombre -- | --- Calificaciones ---");
+    fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
     for(int contador = 0; contador < tamanoVectorEstudiantes; contador++){
         fprintf(archivoBoletin, "%d |", estudiantes[contador].id);
         fprintf(archivoBoletin, " %s %s ", estudiantes[contador].apellido, estudiantes[contador].nombre);
@@ -324,7 +326,8 @@ void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int 
     CERRAR_ARCHIVO(archivoBoletin);
 }
 
-void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme){
+//INFORME GENERAL// TODOS LOS ESTUDIANTES CON PROMEDIO FINAL
+void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme){
     Asignatura asignaturas[MAXASIGNATURAS];
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorAsignaturas;

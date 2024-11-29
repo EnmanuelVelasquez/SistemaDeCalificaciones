@@ -31,7 +31,7 @@ typedef enum {
 } IndicadorCalificacion;
 
 // Estructura del Estudiante
-typedef struct {
+typedef struct{
     int id;               // ID del estudiante
     char nombre[50];      // Nombre del estudiante
     char apellido[50];    // Apellido del estudiante
@@ -54,9 +54,11 @@ void menuPrincipalEstudiante();
 void menuInteraccionDocente();
 float calcularPromedioRecursivo(float calificaciones[], int numCalificaciones, int indice);
 float obtenerPromedio(float calificaciones[], int numCalificaciones);
+IndicadorCalificacion obtenerCalificacion(float nota);
+char* imprimirCalificacion(IndicadorCalificacion calificacion);
 void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante);
 
-//Buscar estudiante por id
+//Buscar estudiante por id de forma recursiva
 int buscarEstudiantePorId(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante) {
     for (int contador = 0; contador < tamanoVectorEstudiantes; contador++) {
         if (estudiantes[contador].id == idEstudiante) {
@@ -399,6 +401,7 @@ void menuPrincipalEstudiante(){
     }
 }
 
+//Función que muestra las calificaciones de un estudiante
 void mostrarCalificacionesEstudiante(int idEstudiante){
     Estudiante estudiantes[MAXESTUDIANTES];
     Asignatura asignaturas[MAXASIGNATURAS];
@@ -428,7 +431,8 @@ void mostrarCalificacionesEstudiante(int idEstudiante){
         }
     }
 }
-                
+
+//Menu que el estudiante podrá ver         
 void menuInteraccionEstudiante(){
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorEstudiantes;
@@ -455,11 +459,14 @@ void menuInteraccionEstudiante(){
                 mostrarCalificacionesEstudiante(idEstudiante);
                 break;
             case 2:
+                for(int contador = 0; contador < tamanoVectorEstudiantes; contador++){
+                    printf("\nEstudiante %d:\n", contador + 1);
+                    mostrarEstudiante(estudiantes[contador]);
+                }
                 printf("\nIngrese el ID del estudiante a generar boletin: ");
                 int idEstudianteBoletin;
                 scanf("%d", &idEstudianteBoletin);
                 generarBoletin(estudiantes, tamanoVectorEstudiantes, idEstudianteBoletin);
-                printf("\nBoletin generado exitosamente.\n");
                 break;
             case 0:
                 salir();
@@ -486,6 +493,27 @@ float obtenerPromedio(float calificaciones[], int numCalificaciones){
     return calcularPromedioRecursivo(calificaciones, numCalificaciones, 0) / numCalificaciones;
 }
 
+// Funcion para enumerar la calificación
+IndicadorCalificacion obtenerCalificacion(float nota){
+    return (nota < 2.0) ? INACEPTABLE :
+           (nota < 3.0) ? BAJO :
+           (nota < 4.0) ? ACEPTABLE :
+           (nota < 5.0) ? ALTO :
+           (nota == 5.0) ? EXCELENTE : INACEPTABLE; // Para notas fuera de rango
+}
+
+// Funcion para imprimir la calificación
+char* imprimirCalificacion(IndicadorCalificacion calificacion){
+    switch (calificacion) {
+        case INACEPTABLE: return "Inaceptable";
+        case BAJO:        return "Bajo";
+        case ACEPTABLE:   return "Aceptable";
+        case ALTO:        return "Alto";
+        case EXCELENTE:   return "Excelente";
+        default:          return "Desconocida";
+    }
+}
+
 //BOLETÍN ESTUDIANTE // CADA ESTUDIANTE CON SUS ASIGNATURAS, NOTAS Y PROMEDIO FINAL
 void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
     Asignatura asignaturas[MAXASIGNATURAS];
@@ -494,12 +522,15 @@ void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int id
     float auxiliar;
     float promedioTotal;
 
-
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
     
     int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, idEstudiante);
+    if(indiceEstudiante == -1){
+        printf("Estudiante no encontrado.\n");
+        return;
+    }
 
-    FILE *archivoBoletin = ABRIR_ARCHIVO("data/boletin.txt", "wb"); // Crear archivo de texto
+    FILE *archivoBoletin = ABRIR_ARCHIVO("data/boletinEstudiante.txt", "wb"); // Crear archivo de texto
     if (archivoBoletin == NULL) {
         FILE_ERROR("Error al crear el archivo de boletin");
     }
@@ -528,33 +559,15 @@ void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int id
             for(int contador2 = 0; contador2 < MAXCALIFICACIONES; contador2++) {
                 fprintf(archivoBoletin,"%.1f | ", estudiantes[indiceEstudiante].asignaturas[contador].calificaciones[contador2]);
             }
-            fprintf(archivoBoletin, "\nPromedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES));
+            fprintf(archivoBoletin, "\nPromedio final asignatura: %.1f  ", obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES));
+            fprintf(archivoBoletin, "(%s) / ", imprimirCalificacion(obtenerCalificacion(obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES))));
             fprintf(archivoBoletin, EVALUAR_ESTADO(obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES)));
             fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
         }
     }
     fprintf(archivoBoletin, "\n***************************************************************");
+    printf("\nBoletin generado exitosamente.\n");
     CERRAR_ARCHIVO(archivoBoletin);
-}
-
-
-IndicadorCalificacion obtenerCalificacion(float nota) {
-    return (nota < 2.0) ? INACEPTABLE :
-           (nota < 3.0) ? BAJO :
-           (nota < 4.0) ? ACEPTABLE :
-           (nota < 5.0) ? ALTO :
-           (nota == 5.0) ? EXCELENTE : INACEPTABLE; // Para notas fuera de rango
-}
-
-void imprimirCalificacion(IndicadorCalificacion calificacion) {
-    switch (calificacion) {
-        case INACEPTABLE: printf("Calificación: Inaceptable\n"); break;
-        case BAJO:        printf("Calificación: Bajo\n"); break;
-        case ACEPTABLE:   printf("Calificación: Aceptable\n"); break;
-        case ALTO:        printf("Calificación: Alto\n"); break;
-        case EXCELENTE:   printf("Calificación: Excelente\n"); break;
-        default:          printf("Calificación: Desconocida\n"); break;
-    }
 }
 
 #endif // ESTUDIANTE_H
