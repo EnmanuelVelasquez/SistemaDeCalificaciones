@@ -329,10 +329,6 @@ void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteIn
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorAsignaturas;
     int tamanoVectorEstudiantes;
-    float promedio;
-    float auxiliar;
-    float promedioTotal;
-    int indiceEstudiante;
 
     leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
@@ -343,14 +339,6 @@ void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteIn
     if (archivoBoletin == NULL) {
         FILE_ERROR("Error al crear el archivo de boletin");
     }
-
-    for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-        int indiceEstudiante = buscarEstudiantePorId(estudiantes, tamanoVectorEstudiantes, estudiantes[contador].id);
-        promedio = obtenerPromedio(estudiantes[indiceEstudiante].asignaturas[contador].calificaciones, MAXCALIFICACIONES);
-        auxiliar += promedio;
-    }
-
-    promedioTotal = auxiliar / tamanoVectorAsignaturas;
 
     fprintf(archivoBoletin, "***************** INFORME GENERAL ******************\n\n");
     fprintf(archivoBoletin, "Institución: Universidad Tecnológica de Pereira\n\n");
@@ -363,11 +351,11 @@ void generarInforme(Docente *docentes, int tamanoVectorDocentes, int idDocenteIn
     for(int contador = 0; contador < tamanoVectorAsignaturas; contador++){
         if(estudiantes[contador].asignaturas[contador].id == asignaturas[contador].id){
             fprintf(archivoBoletin, "Asignatura %s: \n", asignaturas[contador].nombre);
-            fprintf(archivoBoletin, "ID asignatura: %d\n", asignaturas[contador].id);
+            fprintf(archivoBoletin, "ID asignatura: %d", asignaturas[contador].id);
             for(int contador2 = 0; contador2 < tamanoVectorAsignaturas; contador2++){
-                fprintf(archivoBoletin, "\nNombre estudiante: %s %s\n", estudiantes[contador2].nombre, estudiantes[contador2].apellido);
+                fprintf(archivoBoletin, "\n\nNombre estudiante: %s %s\n", estudiantes[contador2].nombre, estudiantes[contador2].apellido);
                 fprintf(archivoBoletin, "Id estudiante: %d\n", estudiantes[contador2].id);
-                fprintf(archivoBoletin, "Promedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[contador2].asignaturas[contador2].calificaciones, MAXCALIFICACIONES));
+                fprintf(archivoBoletin, "Promedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[contador2].asignaturas[contador].calificaciones, MAXCALIFICACIONES));
                 fprintf(archivoBoletin, EVALUAR_ESTADO(obtenerPromedio(estudiantes[contador2].asignaturas[contador2].calificaciones, MAXCALIFICACIONES)));
             }
             fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");

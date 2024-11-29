@@ -17,7 +17,3 @@ int main(){
     option = menuPrincipal(); // Llamar a la función de menu principal
     return 0;
 }
-
-
-
-
