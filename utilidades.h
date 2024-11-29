@@ -20,15 +20,6 @@
 #define CERRAR_ARCHIVO(archivo) { if (archivo) fclose(archivo); }
 
 
-//enumerador para notas:
-typedef enum{
-    MUYBAJO ,
-    BAJO ,
-    ACEPTABLE,
-    ALTO,
-    EXCELENTE
-}NOTAS;
-
 //Funciones adicionales
 
 void salir();

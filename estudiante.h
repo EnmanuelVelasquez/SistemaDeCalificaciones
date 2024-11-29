@@ -21,6 +21,15 @@
 #define EVALUAR_ESTADO(promedioTotal) \
     ((promedioTotal) >= CALIFICACION_MINIMA_APROBACION ? ESTADO_APROBADO : ESTADO_REPROBADO)
 
+//Enumerador para indicador de calificacion
+typedef enum {
+    INACEPTABLE,
+    BAJO,
+    ACEPTABLE,
+    ALTO,
+    EXCELENTE
+} IndicadorCalificacion;
+
 // Estructura del Estudiante
 typedef struct {
     int id;               // ID del estudiante
@@ -477,9 +486,7 @@ float obtenerPromedio(float calificaciones[], int numCalificaciones){
     return calcularPromedioRecursivo(calificaciones, numCalificaciones, 0) / numCalificaciones;
 }
 
-
 //BOLETÍN ESTUDIANTE // CADA ESTUDIANTE CON SUS ASIGNATURAS, NOTAS Y PROMEDIO FINAL
-
 void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int idEstudiante){
     Asignatura asignaturas[MAXASIGNATURAS];
     int tamanoVectorAsignaturas;
@@ -528,6 +535,26 @@ void generarBoletin(Estudiante *estudiantes, int tamanoVectorEstudiantes, int id
     }
     fprintf(archivoBoletin, "\n***************************************************************");
     CERRAR_ARCHIVO(archivoBoletin);
+}
+
+
+IndicadorCalificacion obtenerCalificacion(float nota) {
+    return (nota < 2.0) ? INACEPTABLE :
+           (nota < 3.0) ? BAJO :
+           (nota < 4.0) ? ACEPTABLE :
+           (nota < 5.0) ? ALTO :
+           (nota == 5.0) ? EXCELENTE : INACEPTABLE; // Para notas fuera de rango
+}
+
+void imprimirCalificacion(IndicadorCalificacion calificacion) {
+    switch (calificacion) {
+        case INACEPTABLE: printf("Calificación: Inaceptable\n"); break;
+        case BAJO:        printf("Calificación: Bajo\n"); break;
+        case ACEPTABLE:   printf("Calificación: Aceptable\n"); break;
+        case ALTO:        printf("Calificación: Alto\n"); break;
+        case EXCELENTE:   printf("Calificación: Excelente\n"); break;
+        default:          printf("Calificación: Desconocida\n"); break;
+    }
 }
 
 #endif // ESTUDIANTE_H
