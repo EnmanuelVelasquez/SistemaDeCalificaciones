@@ -26,8 +26,8 @@ void leerArchivosDocente(Docente *docentes, int *tamanoVectorDocentes);
 void eliminarDocente(Docente *docentes, int *tamanoVectorDocentes, int idDocente);
 void menuPrincipalDocente();
 void menuInteraccionDocente();
-void generarListadoAsignaturas();
-void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme);
+void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes);
+void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes);
 
 // Inicialización de las funciones:
 
@@ -249,33 +249,10 @@ void menuInteraccionDocente(){
                 menuPrincipalAsignatura();
                 break;
             case 3:
-                for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
-                        printf("\nDocente %d:\n", contador+1);
-                        mostrarDocente(docentes[contador]);
-                    }
-                int idAsignatura; 
-                int idDocente;      
-                printf("\nIngrese el ID del docente a generar listado de asignaturas: ");
-                scanf("%d", &idDocente);
-                for (int contador = 0; contador < tamanoVectorAsignaturas; contador++){
-                    printf("\nAsignatura %d:\n", contador + 1);
-                    mostrarAsignatura(asignaturas[contador]);
-                    }
-                printf("\nIngrese la asignatura a generar listado: ");
-                scanf("%d", &idAsignatura);
-                generarListadoAsignaturas(docentes, tamanoVectorDocentes, idDocente, idAsignatura);
-                printf("\nListado generado exitosamente.\n");
+                generarListadoAsignaturas(docentes, tamanoVectorDocentes);
                 break;
             case 4:
-                for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
-                        printf("\nDocente %d:\n", contador+1);
-                        mostrarDocente(docentes[contador]);
-                    }
-                printf("\nIngrese el ID del docente a generar informe: ");
-                int idDocenteInforme;
-                scanf("%d", &idDocenteInforme);
-                generarInformeGeneral(docentes, tamanoVectorDocentes, idDocenteInforme);
-                printf("\nInforme generado exitosamente.\n");
+                generarInformeGeneral(docentes, tamanoVectorDocentes);
                 break;
             case 0:
                 salir();
@@ -288,17 +265,40 @@ void menuInteraccionDocente(){
 }
 
 //INFORME ASIGNATURAS // TODOS LOS ESTUDIANTES CON NOTAS DEL ESTUDIANTE 
-void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int idDocente, int idAsignatura){
+void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes){
     Estudiante estudiantes[MAXESTUDIANTES];
     Asignatura asignaturas[MAXASIGNATURAS];
     int tamanoVectorEstudiantes;
     int tamanoVectorAsignaturas;
+    int idAsignatura; 
+    int idDocente;  
     
     leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
 
+    for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
+                        printf("\nDocente %d:\n", contador+1);
+                        mostrarDocente(docentes[contador]);
+    }  
+    printf("\nIngrese el ID del docente a generar listado de asignaturas: ");
+    scanf("%d", &idDocente);
     int indiceDocente = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocente);
+    if(indiceDocente == -1){
+        printf("Docente no encontrado.\n");
+        return;
+    }
+    
+    for (int contador = 0; contador < tamanoVectorAsignaturas; contador++){
+        printf("\nAsignatura %d:\n", contador + 1);
+        mostrarAsignatura(asignaturas[contador]);
+        }
+    printf("\nIngrese la asignatura a generar listado: ");
+    scanf("%d", &idAsignatura);
     int indceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsignatura);
+    if(indceAsignatura == -1){
+        printf("Asignatura no encontrada.\n");
+        return;
+    }
 
     FILE *archivoBoletin = ABRIR_ARCHIVO("data/informeAsignatura.txt", "wb"); // Crear archivo de texto
     if (archivoBoletin == NULL) {
@@ -323,21 +323,33 @@ void generarListadoAsignaturas(Docente *docentes, int tamanoVectorDocentes, int 
         fprintf(archivoBoletin, "\n-------------------------------------------------------------\n");
     }
     fprintf(archivoBoletin, "\n*************************************************************");
+    printf("\nListado generado exitosamente.\n");
     CERRAR_ARCHIVO(archivoBoletin);
 }
 
 //INFORME GENERAL// TODOS LOS ESTUDIANTES CON PROMEDIO FINAL
-void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes, int idDocenteInforme){
+void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes){
     Asignatura asignaturas[MAXASIGNATURAS];
     Estudiante estudiantes[MAXESTUDIANTES];
     int tamanoVectorAsignaturas;
     int tamanoVectorEstudiantes;
+    int idDocenteInforme;
 
     leerArchivosEstudiante(estudiantes, &tamanoVectorEstudiantes);
     leerArchvivosAsignaturas(asignaturas, &tamanoVectorAsignaturas);
 
+    for (int contador = 0; contador < tamanoVectorDocentes; contador++) {
+        printf("\nDocente %d:\n", contador+1);
+        mostrarDocente(docentes[contador]);
+    }
+    printf("\nIngrese el ID del docente a generar informe: ");
+    scanf("%d", &idDocenteInforme);
     int indiceDocente = buscarDocentePorId(docentes, tamanoVectorDocentes, idDocenteInforme);
-
+    if(indiceDocente == -1){
+        printf("Docente no encontrado.\n");
+        return;
+    }
+  
     FILE *archivoBoletin = ABRIR_ARCHIVO("data/informeGeneral.txt", "wb"); // Crear archivo de texto
     if (archivoBoletin == NULL) {
         FILE_ERROR("Error al crear el archivo de boletin");
@@ -365,6 +377,7 @@ void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes, int idDo
         }
     }
     fprintf(archivoBoletin, "\n***************************************************************");
+    printf("\nInforme generado exitosamente.\n");
     CERRAR_ARCHIVO(archivoBoletin);
 }
 
