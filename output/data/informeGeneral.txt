@@ -17,6 +17,10 @@ Promedio final asignatura: 3.6 / Aprobado
 Nombre estudiante: Kayn Velez
 Id estudiante: 234
 Promedio final asignatura: 3.3 / Reprobado
+
+Nombre estudiante: qewr asdf
+Id estudiante: 1234
+Promedio final asignatura: -1.$ / Reprobado
 -------------------------------------------------------------
 Asignatura Matematicas: 
 ID asignatura: 12
@@ -28,6 +32,10 @@ Promedio final asignatura: 3.6 / Aprobado
 Nombre estudiante: Kayn Velez
 Id estudiante: 234
 Promedio final asignatura: 2.5 / Reprobado
+
+Nombre estudiante: qewr asdf
+Id estudiante: 1234
+Promedio final asignatura: -1.$ / Reprobado
 -------------------------------------------------------------
 
 ***************************************************************

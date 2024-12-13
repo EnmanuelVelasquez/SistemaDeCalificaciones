@@ -172,7 +172,10 @@ Estudiante actualizarCalificacionesEstudiante(Estudiante *estudiantes, int taman
     printf("\nIngrese el id de la asignatura: ");
     scanf("%d", &idAsigntura);
     int indiceAsignatura = buscarAsignaturaPorId(asignaturas, tamanoVectorAsignaturas, idAsigntura);
-
+    if(indiceAsignatura == -1){
+        printf("Asignatura no encontrada.\n");
+        return estudiantes[0]; //Lo retorna vacío
+    }
     while (opcion != 0){
     menuActualizarCalificaciones();
     scanf("%d", &opcion);

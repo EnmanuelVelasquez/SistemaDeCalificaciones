@@ -367,7 +367,7 @@ void generarInformeGeneral(Docente *docentes, int tamanoVectorDocentes){
         if(estudiantes[contador].asignaturas[contador].id == asignaturas[contador].id){
             fprintf(archivoBoletin, "Asignatura %s: \n", asignaturas[contador].nombre);
             fprintf(archivoBoletin, "ID asignatura: %d", asignaturas[contador].id);
-            for(int contador2 = 0; contador2 < tamanoVectorAsignaturas; contador2++){
+            for(int contador2 = 0; contador2 < tamanoVectorEstudiantes; contador2++){
                 fprintf(archivoBoletin, "\n\nNombre estudiante: %s %s\n", estudiantes[contador2].nombre, estudiantes[contador2].apellido);
                 fprintf(archivoBoletin, "Id estudiante: %d\n", estudiantes[contador2].id);
                 fprintf(archivoBoletin, "Promedio final asignatura: %.1f / ", obtenerPromedio(estudiantes[contador2].asignaturas[contador].calificaciones, MAXCALIFICACIONES));
