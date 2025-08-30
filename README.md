@@ -1,2 +1,2 @@
 # SistemaDeCalificaciones
- Proyecto Final De Programacion1 
+Aplicación de consola en C que implementa un sistema CRUD para la gestión de calificaciones escolares. Incluye estructura modular (.h), interfaz por menús, almacenamiento en archivos de texto, verificación de administrador, gestión de estudiantes/docentes/asignaturas, entrada de notas y generación de boletines. Útil como proyecto de aprendizaje sobre manejo de archivos y modelos de datos en C.
